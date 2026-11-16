@@ -473,7 +473,7 @@
         <div class="shop-header-actions"><div class="shop-balance"><span class="coin-mark" aria-hidden="true">●</span> <span id="shopBalance">0</span></div><button class="shop-close" id="closeShop" type="button" aria-label="Sulje kauppa">×</button></div>
       </div>
       <div class="shop-content">
-        <p class="shop-intro" id="shopIntro">Kerää kolikot putkeen: joka kolmannesta saat bonuskolikon. Kombo katkeaa, jos kolikko jää taaksesi. Harvinainen violetti kolikko on kolmen arvoinen. Asut ja asusteet muuttavat vain ulkonäköä.</p>
+        <p class="shop-intro" id="shopIntro">Kerää kolikot putkeen: joka kolmannesta saat bonuskolikon. Kombo katkeaa vasta, kun kolikko jää kokonaan ulottumattomiin. Harvinainen violetti kolikko on kolmen arvoinen. Asut ja asusteet muuttavat vain ulkonäköä.</p>
         <div class="shop-feedback" id="shopMessage" role="status" hidden></div>
         <div class="shop-heading"><small>LÖYDÄ OMA TYYLISI</small><h3>Värit ja erikoisasut</h3></div>
         <div class="shop-grid" id="skinItems"></div>
@@ -512,6 +512,7 @@
       const GROUND = 526;
       const PIPE_WIDTH = 92;
       const BIRD_RADIUS = 19;
+      const LEFT_FLIGHT_LIMIT = BIRD_RADIUS + 5;
       const STORAGE_KEY = 'siipiklubi-best';
       const SHOP_STORAGE_KEY = 'siipiklubi-shop-v1';
       const reducedMotionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -1008,12 +1009,13 @@
         if (Math.hypot(bird.x - x, bird.y - y) < reach) {
           pipe[collected] = true;
           collectCoin(rare);
-        } else if (!pipe[missed] && x + reach < bird.x) {
+        } else if (!pipe[missed] && x + reach <= LEFT_FLIGHT_LIMIT) {
+          // The coin can no longer be reached even from the left edge.
           pipe[missed] = true;
           if (coinCombo) {
             coinCombo = 0;
             comboBadge.hidden = true;
-            announcement.textContent = 'Kolikko jäi taakse – kombo katkesi.';
+            announcement.textContent = 'Kolikko jäi ulottumattomiin – kombo katkesi.';
           }
         }
       }
@@ -1121,7 +1123,7 @@
         const moveSpeed = inventory.upgrades.includes('swift') ? 270 : 250;
         bird.vx += (dx * moveSpeed + windStrength - bird.vx) * smooth;
         bird.vy += (dy * moveSpeed - bird.vy) * smooth;
-        bird.x = clamp(bird.x + bird.vx * dt, BIRD_RADIUS + 5, width - BIRD_RADIUS - 5);
+        bird.x = clamp(bird.x + bird.vx * dt, LEFT_FLIGHT_LIMIT, width - BIRD_RADIUS - 5);
         bird.y = Math.max(BIRD_RADIUS + 7, bird.y + bird.vy * dt);
         if (bird.y + BIRD_RADIUS >= GROUND) { bird.y = GROUND - BIRD_RADIUS; endGame(); return; }
         for (const pipe of pipes) {
