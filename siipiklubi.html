@@ -1,0 +1,1253 @@
+<!doctype html>
+<html lang="fi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#172b31">
+  <title>Siipiklubi – pieni peli suurille lennoille</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --ink: #193a35;
+      --cream: #fff8e7;
+      --muted: #a7bdb2;
+      --yellow: #ffcb55;
+      --orange: #f67849;
+    }
+
+    * { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+    html { min-height: 100%; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: radial-gradient(ellipse at 50% -10%, #36534a 0, #203b37 36%, #142c2d 100%);
+      color: var(--cream);
+      font-family: "Trebuchet MS", "Arial Rounded MT Bold", Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: .1;
+      background-image: radial-gradient(#e7ffe7 0.65px, transparent 0.65px);
+      background-size: 7px 7px;
+    }
+    button { font: inherit; }
+    button:focus-visible { outline: 3px solid #fff6b7; outline-offset: 4px; }
+    .app {
+      position: relative;
+      width: min(1100px, calc(100% - 48px), calc((100vh - 225px) * 1.8333));
+      min-width: min(100% - 48px, 600px);
+      margin: 0 auto;
+      padding: 21px 0 22px;
+    }
+    .topbar, .brand, .top-actions, .intro, .footer, .how, .how-item { display: flex; align-items: center; }
+    .topbar { justify-content: space-between; }
+    .brand { gap: 11px; }
+    .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 39px;
+      height: 39px;
+      border: 1px solid #82a794;
+      border-radius: 12px;
+      background: #d4edba;
+      color: var(--ink);
+      transform: rotate(-8deg);
+    }
+    .brand-mark svg { width: 26px; height: 26px; transform: rotate(8deg); }
+    .brand-name { font-size: 21px; font-weight: 900; letter-spacing: -1.2px; line-height: .9; }
+    .brand-name b { color: var(--yellow); }
+    .brand-sub { display: block; margin-top: 5px; color: #a6c4b3; font-size: 8px; letter-spacing: 2px; font-weight: 800; }
+    .top-actions { gap: 16px; }
+    .edition { color: #bed0c2; font-size: 10px; font-weight: 800; letter-spacing: 1.5px; }
+    .shop-button { display: flex; align-items: center; gap: 7px; min-height: 39px; padding: 8px 10px; border: 1px solid #e8ce80; border-radius: 10px; background: #ffdb7f; color: #3c5137; cursor: pointer; font-size: 10px; font-weight: 900; letter-spacing: .8px; }
+    .shop-button:hover { background: #ffebac; }
+    .coin-mark { color: #c88624; font-size: 16px; line-height: 1; }
+    .shop-button strong { font-size: 13px; letter-spacing: 0; }
+    .sound-button {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 12px;
+      border: 1px solid #66847a;
+      border-radius: 9px;
+      background: #29443d;
+      color: #e9f3df;
+      cursor: pointer;
+      font-size: 9px;
+      font-weight: 900;
+      letter-spacing: 1.1px;
+    }
+    .sound-button:hover { background: #36564a; }
+    .sound-button svg { width: 16px; height: 16px; }
+    .intro { justify-content: space-between; gap: 20px; margin: 24px 0 15px; }
+    .eyebrow, .intro-note, .hud-label, .stage-stamp, .panel-kicker, .how-label, .footer, .touch-label {
+      font-size: 9px;
+      font-weight: 900;
+      letter-spacing: 1.7px;
+      text-transform: uppercase;
+    }
+    .eyebrow { margin: 0 0 5px; color: #bad5bd; }
+    .eyebrow span { margin-right: 7px; color: var(--yellow); }
+    h1 { margin: 0; font-size: clamp(25px, 3vw, 36px); line-height: 1; letter-spacing: -1.8px; }
+    .intro-note { margin: 0; color: #b7cec0; text-align: right; line-height: 1.6; letter-spacing: 1.1px; }
+    .stage {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 11 / 6;
+      overflow: hidden;
+      border: 4px solid #e5edcf;
+      border-radius: 18px;
+      background: #a5e4d4;
+      box-shadow: 0 7px 0 #0f2525, 0 23px 50px #091c1b77;
+      isolation: isolate;
+    }
+    canvas { display: block; width: 100%; height: 100%; }
+    .hud { position: absolute; inset: 0 0 auto; display: flex; align-items: flex-start; justify-content: space-between; padding: 19px 22px; pointer-events: none; }
+    .score-block { display: flex; align-items: center; gap: 10px; color: var(--ink); }
+    .score-icon { display: grid; place-items: center; width: 38px; height: 38px; border: 2px solid #31584c; border-radius: 11px; background: #ffe6a0; box-shadow: 0 3px 0 #31584c; font-size: 19px; }
+    .hud-label { display: block; color: #31584c; font-size: 8px; letter-spacing: 1.5px; }
+    .score-number { display: block; font-size: 25px; font-weight: 900; line-height: 1; letter-spacing: -1px; }
+    .hud-right { display: flex; align-items: flex-start; gap: 16px; }
+    .wind-badge, .gate-badge { position: absolute; top: 22px; left: 50%; transform: translateX(-50%); padding: 8px 11px; border: 2px solid #579889; border-radius: 9px; background: #e6f8e9ed; color: #285e58; font-size: 10px; font-weight: 900; letter-spacing: 1px; white-space: nowrap; pointer-events: none; }
+    .gate-badge { border-color: #a87b39; background: #fff0c8f2; color: #7e4d28; }
+    .best-block { text-align: right; color: var(--ink); }
+    .best-number { display: block; margin-top: 3px; font-size: 19px; font-weight: 900; line-height: 1; }
+    .pause-button {
+      width: 37px; height: 37px; border: 2px solid #31584c; border-radius: 10px;
+      background: #fff8df; color: var(--ink); cursor: pointer; pointer-events: auto;
+      box-shadow: 0 3px 0 #31584c; font-size: 15px; font-weight: 900; line-height: 1;
+    }
+    .pause-button:hover { background: #ffe7a1; }
+    .stage-stamp { position: absolute; bottom: 18px; left: 22px; color: #42664b; font-size: 8px; letter-spacing: 1.4px; pointer-events: none; }
+    .stage-stamp.right { right: 22px; left: auto; }
+    .overlay { position: absolute; inset: 0; display: grid; place-items: center; padding: 16px; background: #214a3c1c; }
+    .panel {
+      position: relative;
+      width: min(355px, 100%);
+      padding: 25px 28px 22px;
+      border: 2px solid #2a5045;
+      border-radius: 17px;
+      background: var(--cream);
+      color: var(--ink);
+      box-shadow: 0 7px 0 #2a5045, 0 18px 35px #254c3b38;
+      text-align: center;
+    }
+    .panel-bird { position: absolute; top: -29px; right: -8px; width: 68px; height: 62px; transform: rotate(9deg); filter: drop-shadow(0 3px 0 #2a504555); pointer-events: none; }
+    .panel-kicker { color: #d46c40; font-size: 9px; }
+    .panel-kicker::before, .panel-kicker::after { content: " ✦ "; color: #dfa44a; }
+    .panel h2 { margin: 9px 0 8px; font-size: 39px; font-weight: 900; line-height: .95; letter-spacing: -2.3px; }
+    .panel h2 em { color: #ef784b; font-style: normal; }
+    .panel p { max-width: 255px; margin: 12px auto 16px; color: #607b6d; font-size: 13px; font-weight: 700; line-height: 1.5; }
+    .instruction { display: flex; align-items: center; justify-content: center; gap: 12px; margin: 0 0 17px; padding: 13px 0 0; border-top: 1px dashed #c5d3bb; text-align: left; }
+    .instruction-keys { display: grid; grid-template-columns: repeat(3, 23px); grid-template-rows: repeat(2, 22px); gap: 3px; }
+    .instruction-keys span, .key { display: grid; place-items: center; border: 1px solid #b8c9ad; border-radius: 5px; background: #e9f0da; color: #305349; font-weight: 900; box-shadow: 0 2px 0 #b5c8ac; }
+    .instruction-keys span { font-size: 14px; }
+    .instruction-keys .up { grid-column: 2; }
+    .instruction-keys .left { grid-column: 1; grid-row: 2; }
+    .instruction-keys .down { grid-column: 2; grid-row: 2; }
+    .instruction-keys .right { grid-column: 3; grid-row: 2; }
+    .instruction-text { color: #426558; font-size: 11px; font-weight: 900; line-height: 1.45; }
+    .instruction-text small { display: block; color: #81988a; font-size: 10px; font-weight: 700; }
+    .primary {
+      display: flex; justify-content: center; align-items: center; gap: 11px;
+      width: 100%; min-height: 48px; border: 2px solid #ac5939; border-radius: 10px;
+      background: #f78a55; color: #3d3229; box-shadow: 0 4px 0 #ac5939;
+      cursor: pointer; font-size: 12px; font-weight: 900; letter-spacing: 1px;
+    }
+    .primary:hover { background: #ff9d67; transform: translateY(-1px); }
+    .primary:active { transform: translateY(3px); box-shadow: 0 1px 0 #ac5939; }
+    .primary span { font-size: 18px; line-height: .8; }
+    .panel-hint { display: block; margin-top: 11px; color: #8b9c8a; font-size: 10px; font-weight: 800; }
+    .result-row { display: flex; margin: 16px 0 18px; padding: 13px 0; border-top: 1px dashed #c5d3bb; border-bottom: 1px dashed #c5d3bb; }
+    .result-row > div { flex: 1; }
+    .result-row > div + div { border-left: 1px solid #dce5d1; }
+    .result-row small { display: block; color: #849989; font-size: 9px; font-weight: 900; letter-spacing: 1.2px; }
+    .result-row strong { display: block; margin-top: 3px; font-size: 28px; line-height: 1; }
+    .below-game { display: flex; align-items: center; gap: 22px; margin-top: 22px; }
+    .music-box { flex: 0 0 190px; min-width: 0; color: #e3ead8; }
+    .music-line { display: flex; align-items: center; gap: 7px; }
+    .track-info { min-width: 0; flex: 1; }
+    .track-info small { display: block; color: #a9c3b1; font-size: 8px; font-weight: 900; letter-spacing: 1.3px; }
+    .track-info strong { display: block; margin-top: 3px; overflow: hidden; color: #fff8e7; font-size: 12px; font-weight: 900; text-overflow: ellipsis; white-space: nowrap; }
+    .next-track { flex: 0 0 31px; width: 31px; height: 31px; border: 1px solid #789687; border-radius: 9px; background: #2d5044; color: #f6efce; cursor: pointer; font-size: 17px; }
+    .next-track:hover { background: #426a56; }
+    .volume-row { display: flex; align-items: center; gap: 7px; color: #c5d9c5; }
+    .volume-row span { font-size: 15px; }
+    .volume-row input { min-width: 0; width: 100%; height: 25px; margin: 0; accent-color: #ffcb55; cursor: pointer; }
+    .volume-row output { min-width: 27px; color: #a9c3b1; font-size: 9px; font-weight: 900; text-align: right; }
+    .how { flex: 1; min-width: 0; justify-content: space-between; gap: 20px; margin-top: 0; }
+    .how-item { gap: 12px; }
+    .key-group { display: flex; gap: 3px; }
+    .key { width: 25px; height: 25px; font-size: 14px; }
+    .how-label { color: #e3ead8; font-size: 9px; letter-spacing: 1.1px; }
+    .how-label small { display: block; margin-top: 4px; color: #9db7a8; font-size: 10px; font-weight: 700; letter-spacing: 0; text-transform: none; }
+    .how-divider { height: 31px; width: 1px; background: #607a6e; }
+    .tip { margin-left: auto; color: #b3ccba; font-size: 11px; font-weight: 700; }
+    .tip span { color: #ffcf68; }
+    .touch-controls { display: none; }
+    .footer { justify-content: space-between; margin-top: 22px; padding-top: 15px; border-top: 1px solid #4d695e; color: #8ba99a; font-size: 8px; letter-spacing: 1.2px; }
+    .footer b { color: #e8d290; }
+    .shop-modal { position: fixed; z-index: 20; inset: 0; display: grid; place-items: center; padding: 12px; background: #102b28c9; }
+    .shop-dialog { display: flex; flex-direction: column; width: min(720px, 100%); max-height: min(88dvh, 760px); overflow: hidden; border: 2px solid #31584c; border-radius: 20px; background: var(--cream); color: var(--ink); box-shadow: 0 8px 0 #193a35, 0 25px 65px #071b1a88; }
+    .shop-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 19px 22px 14px; border-bottom: 1px dashed #c6d4bd; }
+    .shop-header small, .shop-heading small { display: block; color: #c26c45; font-size: 9px; font-weight: 900; letter-spacing: 1.4px; }
+    .shop-header h2 { margin: 4px 0 0; font-size: 29px; line-height: 1; letter-spacing: -1.4px; }
+    .shop-header-actions { display: flex; align-items: center; gap: 9px; }
+    .shop-balance { padding: 8px 10px; border: 1px solid #e4cb88; border-radius: 9px; background: #fff0bf; font-size: 13px; font-weight: 900; white-space: nowrap; }
+    .shop-close { width: 38px; height: 38px; border: 1px solid #b6cab5; border-radius: 10px; background: #e7efdd; color: #31584c; cursor: pointer; font-size: 23px; font-weight: 900; line-height: 1; }
+    .shop-content { overflow-y: auto; padding: 15px 22px 22px; overscroll-behavior: contain; }
+    .shop-intro { margin: 0 0 15px; color: #657d6e; font-size: 12px; font-weight: 700; line-height: 1.45; }
+    .shop-feedback { margin: 0 0 10px; padding: 8px 10px; border-radius: 8px; background: #ddf0d6; color: #37694d; font-size: 11px; font-weight: 900; }
+    .shop-heading { margin: 17px 0 9px; }
+    .shop-heading h3 { margin: 3px 0 0; font-size: 18px; letter-spacing: -.5px; }
+    .shop-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+    .shop-item { display: flex; flex-direction: column; align-items: stretch; gap: 7px; min-width: 0; padding: 11px; border: 1px solid #d0dec9; border-radius: 12px; background: #f1f5e8; }
+    .item-head { display: flex; align-items: center; gap: 8px; min-height: 38px; }
+    .item-swatch { display: grid; place-items: center; flex: 0 0 36px; width: 36px; height: 36px; border: 2px solid #795d42; border-radius: 50%; color: #735032; font-size: 18px; font-weight: 900; }
+    .item-name { font-size: 12px; font-weight: 900; line-height: 1.2; }
+    .item-description { flex: 1; margin: 0; color: #718879; font-size: 10px; font-weight: 700; line-height: 1.35; }
+    .item-button { min-height: 34px; padding: 6px; border: 1px solid #b87045; border-radius: 8px; background: #f9a36c; color: #4c3b2d; cursor: pointer; font-size: 10px; font-weight: 900; letter-spacing: .4px; }
+    .item-button:hover:not(:disabled) { background: #ffb986; }
+    .item-button:disabled { border-color: #ccd9c7; background: #e3eadc; color: #839487; cursor: default; }
+    @media (max-width: 550px) {
+      .top-actions { gap: 7px; }
+      .shop-header { padding: 15px 15px 12px; }
+      .shop-header h2 { font-size: 24px; }
+      .shop-content { padding: 13px 15px 18px; }
+      .shop-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 430px) {
+      .sound-button { padding: 9px; }
+      .sound-button span { display: none; }
+    }
+    @media (max-width: 1050px), (max-height: 800px) {
+      .how { justify-content: flex-start; }
+      .how-divider, .how-item.task, .tip { display: none; }
+    }
+    @media (max-width: 700px) {
+      .app { width: min(100% - 28px, 520px); min-width: 0; padding-top: 15px; }
+      .brand-name { font-size: 19px; }
+      .edition { display: none; }
+      .intro { margin: 21px 0 13px; }
+      .intro-note { display: none; }
+      h1 { font-size: 27px; }
+      .stage { aspect-ratio: 4 / 5; border-width: 3px; border-radius: 15px; }
+      .hud { padding: 15px; }
+      .wind-badge, .gate-badge { top: 65px; }
+      .stage-stamp { bottom: 14px; left: 14px; font-size: 7px; }
+      .stage-stamp.right { right: 14px; }
+      .panel { width: min(300px, 100%); padding: 20px 20px 19px; }
+      .panel h2 { font-size: 35px; }
+      .panel p { margin: 10px auto 12px; }
+      .instruction { margin-bottom: 14px; padding-top: 10px; }
+      .how { gap: 10px; }
+      .how-divider, .tip, .how-item.task { display: none; }
+      .footer { margin-top: 20px; }
+    }
+    @media (max-width: 700px), (hover: none), (pointer: coarse), (orientation: landscape) and (max-height: 500px) and (max-width: 950px) {
+      .how { display: none; }
+      .below-game { align-items: flex-start; justify-content: space-between; gap: 10px; }
+      .music-box { flex: 0 1 190px; }
+      .touch-controls { display: flex; flex: 0 0 auto; }
+      .dpad { flex: 0 0 auto; display: grid; grid-template-columns: repeat(3, 72px); grid-template-rows: repeat(2, 70px); gap: 6px; }
+      .dpad button { border: 2px solid #9ab4a1; border-radius: 14px; background: #d8eccd; color: #23483e; box-shadow: 0 4px 0 #6c8f78; font-size: 30px; font-weight: 900; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; }
+      .dpad button:active, .dpad button.pressed { background: #ffda7c; transform: translateY(2px); box-shadow: 0 1px 0 #6c8f78; }
+      .dpad .up { grid-column: 2; }
+      .dpad .left { grid-column: 1; grid-row: 2; }
+      .dpad .down { grid-column: 2; grid-row: 2; }
+      .dpad .right { grid-column: 3; grid-row: 2; }
+    }
+    @media (max-width: 360px) {
+      .brand { gap: 7px; }
+      .brand-mark { flex: 0 0 34px; width: 34px; height: 34px; }
+      .brand-sub { font-size: 7px; letter-spacing: 1.2px; }
+      .shop-button { gap: 5px; padding: 7px; }
+      .panel { padding: 14px 18px 15px; }
+      .panel-bird { display: none; }
+      .below-game { width: min(calc(100vw - 28px), 520px); align-self: center; gap: 6px; }
+      .music-box { position: relative; z-index: 1; flex: 0 0 120px; margin-right: -66px; }
+      .volume-row output { display: none; }
+      .panel h2 { font-size: 30px; }
+      .panel p { font-size: 12px; }
+      .panel-hint { margin-top: 8px; }
+      .primary { min-height: 41px; }
+    }
+    @media (min-width: 361px) and (max-width: 430px) {
+      .below-game { gap: 6px; }
+      .music-box { position: relative; z-index: 1; flex: 0 0 145px; margin-right: -66px; }
+      .volume-row output { display: none; }
+    }
+    @media (max-width: 700px) {
+      .app { display: flex; flex-direction: column; min-height: 100dvh; padding-bottom: max(10px, env(safe-area-inset-bottom)); }
+      main { display: flex; flex: 1; flex-direction: column; }
+      .below-game { margin-top: auto; padding-top: 16px; }
+      .footer { display: none; }
+    }
+    @media (max-width: 700px) and (max-height: 700px) {
+      .app { width: min(calc(100% - 28px), 520px, calc((100dvh - 225px) * .8)); padding-top: 8px; }
+      .intro { display: none; }
+      .stage { margin-top: 10px; }
+      .below-game { margin-top: auto; padding-top: 8px; }
+    }
+    @media (orientation: landscape) and (max-height: 500px) and (max-width: 950px) {
+      .app { display: flex; flex-direction: column; width: calc(100% - 24px); min-width: 0; min-height: 100dvh; height: 100dvh; padding: 8px 0; }
+      .topbar { flex: 0 0 39px; }
+      .intro, .how, .footer { display: none; }
+      main { display: flex; flex: 1; flex-direction: row; align-items: center; gap: 12px; min-height: 0; }
+      .stage { flex: 0 1 auto; width: min(calc(100% - 240px), calc((100dvh - 65px) * 1.8333)); aspect-ratio: 11 / 6; margin: 0; }
+      .below-game { display: flex; flex: 0 0 228px; flex-direction: column; align-self: stretch; justify-content: flex-end; gap: 6px; width: 228px; margin: 0; padding: 0; }
+      .music-box { flex: 0 0 auto; width: 100%; margin: 0; }
+      .touch-controls { align-self: flex-end; }
+      .wind-badge, .gate-badge { top: 55px; }
+      .overlay { padding: 4px; }
+      .panel { width: min(300px, 100%); padding: 8px 14px; }
+      .panel-bird, .panel .instruction, .panel-hint { display: none; }
+      .panel h2 { margin: 5px 0; font-size: 24px; line-height: 1.05; letter-spacing: -1px; }
+      .panel h2 br { display: none; }
+      .panel h2 em::before { content: " "; white-space: pre; }
+      .panel p { margin: 5px auto 8px; font-size: 11px; }
+      .primary { min-height: 38px; }
+      #overPanel p { display: none; }
+      .result-row { margin: 2px 0 4px; padding: 3px 0; }
+      .result-row strong { font-size: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand" aria-label="Siipiklubi, pieni lentokerho">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 32 32" fill="none"><path d="M4 17c8.5.3 11-7.8 23-8-3.9 2.7-5 5.6-5.9 8.8-4.2 3.2-10 3.3-17.1-.8Z" fill="#315d4c"/><path d="M9 16.9c4.7-.2 8.3-1.8 12.9-4.4" stroke="#D4EDBA" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </span>
+        <span><span class="brand-name">siipiklubi<b>.</b></span><span class="brand-sub">PIENI LENTOKERHO</span></span>
+      </div>
+      <div class="top-actions">
+        <span class="edition">✦ &nbsp; PELAA ILMAISEKSI</span>
+        <button class="shop-button" id="openShop" type="button" aria-label="Avaa kauppa, kolikoita 0">KAUPPA <span class="coin-mark" aria-hidden="true">●</span><strong id="coinTotal">0</strong></button>
+        <button class="sound-button" id="soundButton" type="button" aria-pressed="true" aria-label="Mykistä äänet">
+          <svg id="soundIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15 9a4 4 0 0 1 0 6M18 6a8 8 0 0 1 0 12"/></svg>
+          <span id="soundText">ÄÄNET PÄÄLLÄ</span>
+        </button>
+      </div>
+    </header>
+
+    <main>
+      <div class="intro">
+        <div><p class="eyebrow"><span>✦</span> PIENI PELI SUURILLE LENNOILLE</p><h1>Taivas on sinun.</h1></div>
+        <p class="intro-note">YKSI LINTU. LOPUTTOMASTI TAIVASTA.<br>KUINKA PITKÄLLE SINÄ PÄÄSET?</p>
+      </div>
+
+      <section class="stage" id="stage" aria-label="Siipiklubin pelialue">
+        <canvas id="game" role="img" aria-label="Lintu lentää pilvien keskellä ja väistää vihreitä putkia."></canvas>
+        <div class="hud">
+          <div class="score-block"><span class="score-icon" aria-hidden="true">✦</span><span><span class="hud-label">PISTEET</span><strong class="score-number" id="score">00</strong></span></div>
+          <div class="hud-right"><div class="best-block"><span class="hud-label">ENNÄTYS</span><strong class="best-number" id="best">00</strong></div><button id="pauseButton" class="pause-button" type="button" aria-label="Keskeytä peli" title="Keskeytä peli (P tai Esc)" hidden>Ⅱ</button></div>
+        </div>
+        <div class="wind-badge" id="windBadge" hidden>☁ TUULI ←</div>
+        <div class="gate-badge" id="gateBadge" hidden>SIIRRY AUKKOON →</div>
+        <div class="stage-stamp">✦ &nbsp; LENTOTILA: VAPAA</div><div class="stage-stamp right">VAUHTI <span id="speedLabel">1.0×</span> &nbsp; ✦</div>
+
+        <div class="overlay" id="overlay">
+          <div class="panel" id="readyPanel">
+            <svg class="panel-bird" viewBox="0 0 80 70" aria-hidden="true">
+              <path d="M19 35 5 27l4 10-5 6 17 2" fill="#e7a33b" stroke="#845638" stroke-width="2.5" stroke-linejoin="round"/>
+              <path d="M29 17q-4-11 4-8l5 6q1-11 8-6l4 9" fill="#f2b847" stroke="#845638" stroke-width="2.5" stroke-linejoin="round"/>
+              <ellipse cx="38" cy="36" rx="25" ry="22" fill="#ffd15f" stroke="#845638" stroke-width="2.5"/>
+              <ellipse cx="40" cy="47" rx="16" ry="8" fill="#ffe7a0"/>
+              <ellipse cx="27" cy="40" rx="13" ry="9" fill="#f5ac45" stroke="#a97539" stroke-width="2"/>
+              <ellipse cx="50" cy="29" rx="7" ry="8" fill="#fffdf0" stroke="#845638" stroke-width="1.5"/>
+              <ellipse cx="53" cy="30" rx="2.8" ry="4" fill="#30473a"/>
+              <path d="m59 36 14 5-13 5Z" fill="#f47a4b" stroke="#a95537" stroke-width="2" stroke-linejoin="round"/>
+            </svg>
+            <div class="panel-kicker">TERVETULOA KYYTIIN</div>
+            <h2>Siivet auki.<br><em>Menoksi!</em></h2>
+            <p>Kerää kolikot, väistä esteet ja siirry sivulle portin kohdalla!</p>
+            <div class="instruction">
+              <div class="instruction-keys" aria-hidden="true"><span class="up">↑</span><span class="left">←</span><span class="down">↓</span><span class="right">→</span></div>
+              <div class="instruction-text">Ohjaa kaikkiin suuntiin<small>Nuolet, WASD tai kosketusohjain</small></div>
+            </div>
+            <button class="primary" id="startButton" type="button">ALOITA LENTO <span>↗</span></button>
+            <small class="panel-hint">tai paina välilyöntiä</small>
+          </div>
+          <div class="panel" id="pausePanel" hidden>
+            <div class="panel-kicker">PIENI HENGÄHDYSTAUKO</div>
+            <h2>Lento<br><em>tauolla.</em></h2>
+            <p>Maisemat odottavat juuri siinä, mihin jäit.</p>
+            <button class="primary" id="resumeButton" type="button">JATKA LENTOA <span>↗</span></button>
+            <small class="panel-hint">P tai Esc jatkaa myös</small>
+          </div>
+          <div class="panel" id="overPanel" hidden>
+            <div class="panel-kicker" id="resultKicker">HIENO LENTO</div>
+            <h2><span id="resultTitle">Taivas</span><br><em id="resultAccent">odottaa!</em></h2>
+            <p id="resultMessage">Jokainen lento vie sinua vähän pidemmälle.</p>
+            <div class="result-row"><div><small>PISTEET</small><strong id="finalScore">00</strong></div><div><small>ENNÄTYS</small><strong id="finalBest">00</strong></div></div>
+            <button class="primary" id="retryButton" type="button">LENNÄ UUDELLEEN <span>↗</span></button>
+            <small class="panel-hint">tai paina välilyöntiä</small>
+          </div>
+        </div>
+      </section>
+
+      <div class="below-game">
+        <div class="music-box" role="group" aria-label="Musiikki ja äänenvoimakkuus">
+          <div class="music-line">
+            <div class="track-info"><small>♫ &nbsp; MUSIIKKI</small><strong id="trackName" aria-live="polite">Pilvien yllä</strong></div>
+            <button class="next-track" id="nextTrack" type="button" aria-label="Vaihda seuraavaan kappaleeseen" title="Seuraava kappale">⇥</button>
+          </div>
+          <div class="volume-row"><span aria-hidden="true">♪</span><input id="volume" type="range" min="0" max="100" value="40" aria-label="Äänenvoimakkuus"><output id="volumeValue" for="volume">40%</output></div>
+          <audio id="musicPlayer" preload="metadata"></audio>
+        </div>
+        <div class="how" aria-label="Peliohjeet">
+          <div class="how-item"><div class="key-group" aria-hidden="true"><span class="key">←</span><span class="key">↑</span><span class="key">↓</span><span class="key">→</span></div><div class="how-label">LIIKU VAPAASTI<small>Nuolinäppäimet tai WASD</small></div></div>
+          <div class="how-divider"></div>
+          <div class="how-item task"><span style="font-size:25px;color:#ffd273" aria-hidden="true">✳</span><div class="how-label">VARO ESTEITÄ JA TUULTA<small>Jokaisesta putkiparista yksi piste</small></div></div>
+          <div class="tip"><span>✦</span> &nbsp; Pysähdy hetkeksi: P tai Esc</div>
+        </div>
+        <div class="touch-controls" aria-label="Kosketusohjaus">
+          <div class="dpad">
+            <button class="up" data-direction="up" type="button" aria-label="Ylös">↑</button>
+            <button class="left" data-direction="left" type="button" aria-label="Taakse">←</button>
+            <button class="down" data-direction="down" type="button" aria-label="Alas">↓</button>
+            <button class="right" data-direction="right" type="button" aria-label="Eteen">→</button>
+          </div>
+        </div>
+      </div>
+    </main>
+    <footer class="footer"><span>TEHTY PIENILLE TAUKOHETKILLE <b>♥</b></span><span>SIIPIKLUBI &nbsp; / &nbsp; 01</span></footer>
+    <div id="announcement" aria-live="polite" style="position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);"></div>
+  </div>
+
+  <div class="shop-modal" id="shopModal" hidden>
+    <section class="shop-dialog" role="dialog" aria-modal="true" aria-labelledby="shopTitle" aria-describedby="shopIntro">
+      <div class="shop-header">
+        <div><small>✦ &nbsp; PIENI LENTOPUOTI</small><h2 id="shopTitle">Siipiklubi-kauppa</h2></div>
+        <div class="shop-header-actions"><div class="shop-balance"><span class="coin-mark" aria-hidden="true">●</span> <span id="shopBalance">0</span></div><button class="shop-close" id="closeShop" type="button" aria-label="Sulje kauppa">×</button></div>
+      </div>
+      <div class="shop-content">
+        <p class="shop-intro" id="shopIntro">Kolikoita löytyy silloin tällöin putkien välistä. Asut ovat vain ulkonäköä, ja päivitykset antavat pienen avun.</p>
+        <div class="shop-feedback" id="shopMessage" role="status" hidden></div>
+        <div class="shop-heading"><small>LÖYDÄ OMA TYYLISI</small><h3>Asut</h3></div>
+        <div class="shop-grid" id="skinItems"></div>
+        <div class="shop-heading"><small>PIENI APU MATKAAN</small><h3>Päivitykset</h3></div>
+        <div class="shop-grid" id="upgradeItems"></div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    (() => {
+      'use strict';
+      const canvas = document.getElementById('game');
+      const ctx = canvas.getContext('2d');
+      const stage = document.getElementById('stage');
+      const overlay = document.getElementById('overlay');
+      const panels = { ready: document.getElementById('readyPanel'), paused: document.getElementById('pausePanel'), over: document.getElementById('overPanel') };
+      const scoreEl = document.getElementById('score');
+      const bestEl = document.getElementById('best');
+      const pauseButton = document.getElementById('pauseButton');
+      const windBadge = document.getElementById('windBadge');
+      const gateBadge = document.getElementById('gateBadge');
+      const speedLabel = document.getElementById('speedLabel');
+      const soundButton = document.getElementById('soundButton');
+      const soundText = document.getElementById('soundText');
+      const soundIcon = document.getElementById('soundIcon');
+      const musicPlayer = document.getElementById('musicPlayer');
+      const trackName = document.getElementById('trackName');
+      const volumeSlider = document.getElementById('volume');
+      const volumeValue = document.getElementById('volumeValue');
+      const announcement = document.getElementById('announcement');
+      const HEIGHT = 600;
+      const GROUND = 526;
+      const PIPE_WIDTH = 92;
+      const BIRD_RADIUS = 19;
+      const STORAGE_KEY = 'siipiklubi-best';
+      const SHOP_STORAGE_KEY = 'siipiklubi-shop-v1';
+      let width = 1100;
+      let state = 'ready';
+      let score = 0;
+      let best = 0;
+      let soundOn = true;
+      let masterVolume = .4;
+      let lastVolume = .4;
+      let soundContext;
+      let trackIndex = 0;
+      let resultIndex = 0;
+      let scenery = 0;
+      let animTime = 0;
+      let lastTime = 0;
+      let lastGap = 275;
+      let flightTime = 0;
+      let nextPipeIndex = 0;
+      let wind = { active: false, pending: false, remaining: 3, direction: -1, y: 278, elapsed: 0 };
+      let gate = { phase: 'idle', nextScore: 4, lastDirection: -1, center: 0, gap: 140, y: -30, timer: 0 };
+      let pipes = [];
+      let bird = { x: 250, y: 280, vx: 0, vy: 0 };
+      const keyboard = new Set();
+      const touchPointers = new Map();
+      const directionByCode = { ArrowUp: 'up', KeyW: 'up', ArrowDown: 'down', KeyS: 'down', ArrowLeft: 'left', KeyA: 'left', ArrowRight: 'right', KeyD: 'right' };
+      const skins = [
+        { id: 'sun', name: 'Aurinkolintu', price: 0, description: 'Iloinen alkuperäinen lentäjä.', body: '#ffd15f', belly: '#ffe7a0', wing: '#f5ac45', tail: '#e7a33b' },
+        { id: 'berry', name: 'Vadelmapilvi', price: 3, description: 'Pehmeän vaaleanpunainen asu.', body: '#f59ca8', belly: '#ffe1d7', wing: '#e7798c', tail: '#d97080' },
+        { id: 'mint', name: 'Minttusiipi', price: 6, description: 'Raikas mintunvihreä asu.', body: '#9de2bf', belly: '#e3fff0', wing: '#64c59f', tail: '#5ab894' },
+        { id: 'night', name: 'Iltataivas', price: 10, description: 'Pehmeää sinistä iltataivasta.', body: '#b3baf4', belly: '#eeeaff', wing: '#8e9cdb', tail: '#7888ca' },
+        { id: 'gold', name: 'Kultakruunu', price: 80, description: 'Harvinainen asu kultaisella kruunulla.', body: '#f7d558', belly: '#fff0ac', wing: '#e9a83c', tail: '#d99030', accessory: 'crown' },
+        { id: 'rainbow', name: 'Sateenkaaritähti', price: 150, description: 'Todella harvinainen sateenkaariasu.', body: '#e5b0f2', belly: '#fff0ff', wing: '#b389d9', tail: '#e98eb0', accessory: 'rainbow' }
+      ];
+      const upgrades = [
+        { id: 'swift', name: 'Kevyet siivet', price: 5, icon: '↗', description: 'Ohjausnopeus kasvaa vain 8 %. Tuuli pysyy vastustamattomana.' },
+        { id: 'magnet', name: 'Pikku magneetti', price: 8, icon: '✧', description: 'Kolikot tarttuvat hiukan kauempaa.' }
+      ];
+      const tracks = [
+        { name: 'Pilvien yllä', file: 'siipiklubi-aanet/pilvien-ylla.mp3' },
+        { name: 'Taivaan tahtiin', file: 'siipiklubi-aanet/taivaan-tahtiin.mp3' }
+      ];
+      const resultCards = [
+        { kicker: 'HIENOA MENOA', title: 'Upea', accent: 'lento!', message: 'Jokainen siivenisku vie sinua vähän pidemmälle.', record: 'Uusi ennätys! Siipesi kantavat huikean pitkälle.' },
+        { kicker: 'KIPINÄ LÖYTYI', title: 'Taivas', accent: 'odottaa!', message: 'Seuraava seikkailu alkaa juuri siitä, mihin jäit.', record: 'Mikä huippulento! Rikottu ennätys näyttää tietä.' },
+        { kicker: 'HYVÄ SINÄ', title: 'Siivet', accent: 'kantavat!', message: 'Rohkeat lentäjät löytävät aina uuden reitin.', record: 'Sinä teit sen! Uusi ennätys loistaa taivaalla.' },
+        { kicker: 'LOISTAVAA', title: 'Aina', accent: 'eteenpäin!', message: 'Jokainen yritys on uusi mahdollisuus loistaa.', record: 'Ennätys uusiksi! Taitosi kasvavat joka lennolla.' },
+        { kicker: 'SANKARILENTÄJÄ', title: 'Juuri', accent: 'noin!', message: 'Pienistä siiveniskuista syntyy suuria seikkailuja.', record: 'Mahtavaa menoa! Uusi ennätys on sinun.' },
+        { kicker: 'JATKA SAMAAN MALLIIN', title: 'Hyvä', accent: 'sinä!', message: 'Pilvien takana odottaa vielä monta hienoa hetkeä.', record: 'Uusi ennätys! Tänään taivas on aivan sinun.' }
+      ];
+      const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
+      const formatScore = n => String(n).padStart(2, '0');
+      function loadInventory() {
+        const fallback = { coins: 0, owned: ['sun'], equipped: 'sun', upgrades: [] };
+        try {
+          const saved = JSON.parse(localStorage.getItem(SHOP_STORAGE_KEY) || 'null');
+          if (!saved || typeof saved !== 'object') return fallback;
+          const coinNumber = Number(saved.coins);
+          const coins = Number.isFinite(coinNumber) ? clamp(Math.floor(coinNumber), 0, 1000000) : 0;
+          const owned = ['sun', ...(Array.isArray(saved.owned) ? saved.owned.filter(id => skins.some(skin => skin.id === id && id !== 'sun')) : [])];
+          const purchased = Array.isArray(saved.upgrades) ? saved.upgrades.filter(id => upgrades.some(upgrade => upgrade.id === id)) : [];
+          return { coins, owned: [...new Set(owned)], equipped: owned.includes(saved.equipped) ? saved.equipped : 'sun', upgrades: [...new Set(purchased)] };
+        } catch (_) { return fallback; }
+      }
+      let inventory = loadInventory();
+      const shopModal = document.getElementById('shopModal');
+      const openShopButton = document.getElementById('openShop');
+      const closeShopButton = document.getElementById('closeShop');
+      const shopMessage = document.getElementById('shopMessage');
+      let resumeAfterShop = false;
+      function saveInventory() {
+        try { localStorage.setItem(SHOP_STORAGE_KEY, JSON.stringify(inventory)); } catch (_) { /* Purchases remain available for this session. */ }
+      }
+      function updateCoins() {
+        document.getElementById('coinTotal').textContent = inventory.coins > 999 ? '999+' : inventory.coins;
+        document.getElementById('shopBalance').textContent = inventory.coins;
+        openShopButton.setAttribute('aria-label', `Avaa kauppa, kolikoita ${inventory.coins}`);
+      }
+      updateCoins();
+      try { best = Math.max(0, Number.parseInt(localStorage.getItem(STORAGE_KEY), 10) || 0); } catch (_) { /* The game also works without storage. */ }
+      bestEl.textContent = formatScore(best);
+
+      function resize() {
+        const rect = stage.getBoundingClientRect();
+        const previousWidth = width;
+        const cssWidth = Math.max(1, rect.width - stage.clientLeft * 2);
+        const cssHeight = Math.max(1, rect.height - stage.clientTop * 2);
+        width = Math.round(HEIGHT * cssWidth / cssHeight);
+        if (state === 'playing' || state === 'paused' || state === 'over') {
+          bird.x = clamp(bird.x * width / previousWidth, 30, width - 30);
+          pipes.forEach(pipe => { pipe.x *= width / previousWidth; });
+          if (gate.phase === 'warning' || gate.phase === 'sweep') gate.center = clamp(gate.center * width / previousWidth, gate.gap / 2, width - gate.gap / 2);
+        } else {
+          bird.x = width * .25;
+          bird.y = 278;
+        }
+        const ratio = Math.min(window.devicePixelRatio || 1, 2);
+        canvas.width = Math.round(width * ratio);
+        canvas.height = Math.round(HEIGHT * ratio);
+        ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+      }
+      window.addEventListener('resize', resize);
+      resize();
+
+      function playMusic() {
+        if (!soundOn || masterVolume <= 0 || state !== 'playing') return;
+        try {
+          musicPlayer.volume = masterVolume;
+          const playing = musicPlayer.play();
+          if (playing && playing.catch) playing.catch(() => {});
+        } catch (_) { /* Playback can be blocked until the next user gesture. */ }
+      }
+      function selectTrack(index) {
+        musicPlayer.pause();
+        trackIndex = (index + tracks.length) % tracks.length;
+        trackName.textContent = tracks[trackIndex].name;
+        trackName.title = tracks[trackIndex].name;
+        musicPlayer.volume = masterVolume;
+        musicPlayer.src = tracks[trackIndex].file;
+        playMusic();
+      }
+      function syncSoundControls() {
+        const value = soundOn ? Math.round(masterVolume * 100) : 0;
+        musicPlayer.volume = soundOn ? masterVolume : 0;
+        volumeSlider.value = value;
+        volumeSlider.setAttribute('aria-valuetext', `${value} prosenttia`);
+        volumeValue.value = `${value}%`;
+        volumeValue.textContent = `${value}%`;
+        soundText.textContent = soundOn ? 'ÄÄNET PÄÄLLÄ' : 'ÄÄNET POIS';
+        soundButton.setAttribute('aria-pressed', String(soundOn));
+        soundButton.setAttribute('aria-label', soundOn ? 'Mykistä äänet' : 'Laita äänet päälle');
+        soundIcon.innerHTML = soundOn
+          ? '<path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15 9a4 4 0 0 1 0 6M18 6a8 8 0 0 1 0 12"/>'
+          : '<path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="m16 9 5 6m0-6-5 6"/>';
+      }
+      function tone(frequency, duration, type = 'sine', loudness = .045, delay = 0) {
+        if (!soundOn || masterVolume <= 0) return;
+        try {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (!AudioContext) return;
+          if (!soundContext) soundContext = new AudioContext();
+          if (soundContext.state === 'suspended') soundContext.resume().catch(() => {});
+          const oscillator = soundContext.createOscillator();
+          const gain = soundContext.createGain();
+          const start = soundContext.currentTime + delay;
+          oscillator.type = type;
+          oscillator.frequency.setValueAtTime(frequency, start);
+          gain.gain.setValueAtTime(.0001, start);
+          gain.gain.exponentialRampToValueAtTime(Math.max(.0001, loudness * masterVolume), start + .012);
+          gain.gain.exponentialRampToValueAtTime(.0001, start + duration);
+          oscillator.connect(gain);
+          gain.connect(soundContext.destination);
+          oscillator.start(start);
+          oscillator.stop(start + duration + .02);
+        } catch (_) { /* Audio is optional. */ }
+      }
+
+      function clearInput() {
+        keyboard.clear();
+        touchPointers.clear();
+        document.querySelectorAll('.dpad button').forEach(button => button.classList.remove('pressed'));
+      }
+      function showState(next) {
+        state = next;
+        overlay.hidden = next === 'playing';
+        Object.entries(panels).forEach(([name, panel]) => { panel.hidden = name !== next; });
+        pauseButton.hidden = next !== 'playing';
+        windBadge.hidden = next !== 'playing' || !wind.active;
+        gateBadge.hidden = next !== 'playing' || (gate.phase !== 'warning' && gate.phase !== 'sweep');
+        if (next === 'playing') playMusic(); else musicPlayer.pause();
+      }
+      function makePipe(x, center, index) {
+        const moving = index >= 2 && index % 3 === 2;
+        const hazard = index >= 4 && index % 4 === 0 && !moving;
+        return {
+          x, center, baseCenter: center,
+          gap: Math.max(164, 198 - score * 1.3),
+          moving, phase: Math.random() * Math.PI * 2,
+          amplitude: Math.min(40, 26 + score * .5),
+          hazard, coin: index % 3 === 0 && !moving && !hazard,
+          coinCollected: false, scored: false
+        };
+      }
+      function startGame() {
+        clearInput();
+        score = 0;
+        scoreEl.textContent = formatScore(score);
+        bird = { x: Math.max(75, width * .24), y: 278, vx: 0, vy: 0 };
+        lastGap = 278;
+        flightTime = 0;
+        nextPipeIndex = 1;
+        wind = { active: false, pending: false, remaining: 3, direction: -1, y: 278, elapsed: 0 };
+        gate = { phase: 'idle', nextScore: 4, lastDirection: -1, center: 0, gap: 140, y: -30, timer: 0 };
+        speedLabel.textContent = '1.0×';
+        pipes = [makePipe(Math.min(width + 65, bird.x + 560), lastGap, 0)];
+        scenery = 0;
+        showState('playing');
+        announcement.textContent = 'Lento alkoi!';
+        tone(440, .13, 'sine');
+        tone(660, .16, 'sine', .04, .1);
+      }
+      function pauseGame() {
+        if (state !== 'playing') return;
+        clearInput();
+        showState('paused');
+        announcement.textContent = 'Peli on tauolla.';
+      }
+      function resumeGame() {
+        if (state !== 'paused') return;
+        clearInput();
+        showState('playing');
+        lastTime = 0;
+        announcement.textContent = 'Lento jatkuu.';
+        tone(520, .1);
+      }
+      function renderShop() {
+        function renderItems(containerId, items, kind) {
+          const container = document.getElementById(containerId);
+          container.replaceChildren();
+          items.forEach(item => {
+            const owned = kind === 'skin' ? inventory.owned.includes(item.id) : inventory.upgrades.includes(item.id);
+            const equipped = kind === 'skin' && inventory.equipped === item.id;
+            const card = document.createElement('article');
+            card.className = 'shop-item';
+            card.tabIndex = -1;
+            card.dataset.itemId = item.id;
+            const head = document.createElement('div'); head.className = 'item-head';
+            const swatch = document.createElement('span'); swatch.className = 'item-swatch';
+            swatch.setAttribute('aria-hidden', 'true');
+            swatch.style.background = item.accessory === 'rainbow' ? 'linear-gradient(135deg, #f7aebc, #ffdd81, #a0e5cf, #bda6ef)' : (item.body || '#dcebc9');
+            swatch.textContent = kind === 'upgrade' ? item.icon : item.accessory === 'crown' ? '♛' : '✦';
+            const name = document.createElement('div'); name.className = 'item-name'; name.textContent = item.name;
+            const description = document.createElement('p'); description.className = 'item-description'; description.textContent = item.description;
+            const button = document.createElement('button'); button.className = 'item-button'; button.type = 'button';
+            button.textContent = equipped ? 'KÄYTÖSSÄ' : owned ? (kind === 'skin' ? 'OTA KÄYTTÖÖN' : 'OSTETTU') : `OSTA · ${item.price} ●`;
+            button.disabled = equipped || (owned && kind === 'upgrade') || (!owned && inventory.coins < item.price);
+            if (!owned && inventory.coins < item.price) button.title = `Tarvitset vielä ${item.price - inventory.coins} kolikkoa.`;
+            button.setAttribute('aria-label', `${item.name}: ${button.textContent}`);
+            button.addEventListener('click', () => buyItem(kind, item));
+            head.append(swatch, name); card.append(head, description, button); container.append(card);
+          });
+        }
+        renderItems('skinItems', skins, 'skin');
+        renderItems('upgradeItems', upgrades, 'upgrade');
+        updateCoins();
+      }
+      function buyItem(kind, item) {
+        if (kind === 'skin') {
+          if (!inventory.owned.includes(item.id)) {
+            if (inventory.coins < item.price) return;
+            inventory.coins -= item.price;
+            inventory.owned.push(item.id);
+          }
+          inventory.equipped = item.id;
+          shopMessage.textContent = `${item.name} on nyt käytössä!`;
+        } else {
+          if (inventory.upgrades.includes(item.id) || inventory.coins < item.price) return;
+          inventory.coins -= item.price;
+          inventory.upgrades.push(item.id);
+          shopMessage.textContent = `${item.name} on ostettu!`;
+        }
+        shopMessage.hidden = false;
+        saveInventory();
+        renderShop();
+        shopModal.querySelector(`[data-item-id="${item.id}"]`)?.focus();
+        tone(720, .12, 'sine', .04);
+      }
+      function openShop() {
+        resumeAfterShop = state === 'playing';
+        if (resumeAfterShop) pauseGame();
+        shopMessage.hidden = true;
+        renderShop();
+        shopModal.hidden = false;
+        closeShopButton.focus();
+      }
+      function closeShop() {
+        if (shopModal.hidden) return;
+        shopModal.hidden = true;
+        if (resumeAfterShop && state === 'paused' && !document.hidden) resumeGame();
+        resumeAfterShop = false;
+        openShopButton.focus();
+      }
+      openShopButton.addEventListener('click', openShop);
+      closeShopButton.addEventListener('click', closeShop);
+      shopModal.addEventListener('click', event => { if (event.target === shopModal) closeShop(); });
+      window.addEventListener('storage', event => {
+        if (event.key !== SHOP_STORAGE_KEY) return;
+        inventory = loadInventory();
+        updateCoins();
+        if (!shopModal.hidden) renderShop();
+      });
+      function endGame() {
+        const newRecord = score > best;
+        if (newRecord) {
+          best = score;
+          try { localStorage.setItem(STORAGE_KEY, String(best)); } catch (_) { /* Best score remains available for this session. */ }
+        }
+        bestEl.textContent = formatScore(best);
+        document.getElementById('finalScore').textContent = formatScore(score);
+        document.getElementById('finalBest').textContent = formatScore(best);
+        const result = resultCards[resultIndex++ % resultCards.length];
+        document.getElementById('resultKicker').textContent = newRecord ? 'UUSI ENNÄTYS!' : result.kicker;
+        document.getElementById('resultTitle').textContent = result.title;
+        document.getElementById('resultAccent').textContent = result.accent;
+        document.getElementById('resultMessage').textContent = newRecord ? result.record : result.message;
+        clearInput();
+        showState('over');
+        announcement.textContent = `Hieno lento! Pisteet ${score}, ennätys ${best}. ${newRecord ? result.record : result.message}`;
+        tone(300, .18, 'triangle', .06);
+        tone(210, .25, 'triangle', .05, .12);
+      }
+      document.getElementById('startButton').addEventListener('click', startGame);
+      document.getElementById('retryButton').addEventListener('click', startGame);
+      document.getElementById('resumeButton').addEventListener('click', resumeGame);
+      pauseButton.addEventListener('click', pauseGame);
+      soundButton.addEventListener('click', () => {
+        soundOn = !soundOn;
+        if (soundOn && masterVolume === 0) masterVolume = lastVolume || .4;
+        if (soundOn) { playMusic(); tone(600, .1); }
+        else { musicPlayer.pause(); if (soundContext) soundContext.suspend().catch(() => {}); }
+        syncSoundControls();
+      });
+      volumeSlider.addEventListener('input', () => {
+        masterVolume = clamp(Number(volumeSlider.value) / 100, 0, 1);
+        if (masterVolume > 0) lastVolume = masterVolume;
+        soundOn = masterVolume > 0;
+        musicPlayer.volume = masterVolume;
+        if (soundOn) playMusic();
+        else { musicPlayer.pause(); if (soundContext) soundContext.suspend().catch(() => {}); }
+        syncSoundControls();
+      });
+      document.getElementById('nextTrack').addEventListener('click', () => selectTrack(trackIndex + 1));
+      musicPlayer.addEventListener('ended', () => selectTrack(trackIndex + 1));
+      selectTrack(0);
+      syncSoundControls();
+      window.addEventListener('keydown', event => {
+        if (!shopModal.hidden) {
+          if (event.code === 'Escape') { event.preventDefault(); closeShop(); }
+          else if (event.code === 'Tab') {
+            const focusable = [...shopModal.querySelectorAll('button:not(:disabled)')];
+            const first = focusable[0], last = focusable[focusable.length - 1];
+            if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+            else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+          }
+          return;
+        }
+        if (event.target instanceof HTMLInputElement && event.target.type === 'range') return;
+        if (directionByCode[event.code]) {
+          if (state === 'playing') { event.preventDefault(); keyboard.add(event.code); }
+          return;
+        }
+        if ((event.code === 'KeyP' || event.code === 'Escape') && !event.repeat) {
+          if (state === 'playing') { event.preventDefault(); pauseGame(); }
+          else if (state === 'paused') { event.preventDefault(); resumeGame(); }
+        }
+        if ((event.code === 'Space' || event.code === 'Enter') && !event.repeat && document.activeElement.tagName !== 'BUTTON') {
+          if (state === 'ready' || state === 'over') { event.preventDefault(); startGame(); }
+          else if (state === 'paused') { event.preventDefault(); resumeGame(); }
+        }
+      });
+      window.addEventListener('keyup', event => { if (directionByCode[event.code]) keyboard.delete(event.code); });
+      window.addEventListener('blur', () => { if (state === 'playing') pauseGame(); else clearInput(); });
+      document.addEventListener('visibilitychange', () => { if (document.hidden && state === 'playing') pauseGame(); });
+      const padButtons = [...document.querySelectorAll('.dpad button')];
+      function updatePadStyles() {
+        const active = new Set(touchPointers.values());
+        padButtons.forEach(button => button.classList.toggle('pressed', active.has(button.dataset.direction)));
+      }
+      padButtons.forEach(button => {
+        const release = event => {
+          touchPointers.delete(event.pointerId);
+          updatePadStyles();
+        };
+        button.addEventListener('pointerdown', event => {
+          event.preventDefault();
+          if (state !== 'playing') return;
+          button.setPointerCapture(event.pointerId);
+          touchPointers.set(event.pointerId, button.dataset.direction);
+          updatePadStyles();
+        });
+        button.addEventListener('pointermove', event => {
+          if (!touchPointers.has(event.pointerId)) return;
+          const target = document.elementFromPoint(event.clientX, event.clientY)?.closest('.dpad button');
+          if (target) { touchPointers.set(event.pointerId, target.dataset.direction); updatePadStyles(); }
+        });
+        button.addEventListener('pointerup', release);
+        button.addEventListener('pointercancel', release);
+        button.addEventListener('lostpointercapture', release);
+        button.addEventListener('contextmenu', event => event.preventDefault());
+      });
+      function down(direction) {
+        return [...keyboard].some(code => directionByCode[code] === direction) || [...touchPointers.values()].includes(direction);
+      }
+      function circleRect(cx, cy, radius, x, y, w, h) {
+        const nearestX = clamp(cx, x, x + w);
+        const nearestY = clamp(cy, y, y + h);
+        return (cx - nearestX) ** 2 + (cy - nearestY) ** 2 < radius ** 2;
+      }
+      function startGate() {
+        const minCenter = gate.gap / 2 + 8;
+        const maxCenter = width - gate.gap / 2 - 8;
+        let direction = -gate.lastDirection;
+        const room = dir => dir > 0 ? maxCenter - bird.x : bird.x - minCenter;
+        if (room(direction) < 115) direction *= -1;
+        gate.center = clamp(bird.x + direction * Math.min(190, room(direction)), minCenter, maxCenter);
+        gate.lastDirection = direction;
+        gate.phase = 'warning';
+        gate.timer = 3.2;
+        gate.y = -30;
+        wind.active = false;
+        wind.pending = false;
+        wind.remaining = 4;
+        windBadge.hidden = true;
+        gateBadge.textContent = `SIIRRY AUKKOON ${direction < 0 ? '←' : '→'}`;
+        gateBadge.hidden = false;
+        announcement.textContent = `Portti tulossa! Siirry aukkoon ${direction < 0 ? 'vasemmalle' : 'oikealle'}.`;
+        tone(420, .14, 'triangle', .04);
+        tone(560, .16, 'triangle', .04, .12);
+      }
+      function startWind() {
+        wind.pending = false;
+        wind.active = true;
+        // Push towards the passing obstacles, never pinning the bird against them.
+        wind.direction = 1;
+        wind.y = clamp(bird.y + (Math.random() - .5) * 140, 125, 400);
+        wind.elapsed = 0;
+        wind.remaining = 3.5;
+        windBadge.textContent = `☁ VOIMAKAS TUULI ${wind.direction < 0 ? '←' : '→'}`;
+        windBadge.hidden = false;
+        announcement.textContent = `Voimakas tuuli puhaltaa ${wind.direction < 0 ? 'vasemmalle' : 'oikealle'}. Voit väistää ylös tai alas.`;
+      }
+      function update(dt) {
+        animTime += dt;
+        if (state === 'ready') scenery += dt * 14;
+        if (state !== 'playing') return;
+        flightTime += dt;
+        const speed = Math.min(300, 176 + flightTime + score * 1.8);
+        const speedText = `${(speed / 176).toFixed(1)}×`;
+        if (speedLabel.textContent !== speedText) speedLabel.textContent = speedText;
+        scenery += speed * dt;
+        if (gate.phase === 'idle' && !wind.pending) {
+          wind.remaining -= dt;
+          if (wind.remaining <= 0 && wind.active) {
+            wind.active = false;
+            wind.remaining = 5 + Math.random() * 2;
+            windBadge.hidden = true;
+          } else if (wind.remaining <= 0) {
+            // Wait for a clear approach before starting a gust near obstacles.
+            wind.pending = true;
+          }
+        }
+        if (wind.active) wind.elapsed += dt;
+        let dx = Number(down('right')) - Number(down('left'));
+        let dy = Number(down('down')) - Number(down('up'));
+        if (dx && dy) { dx *= Math.SQRT1_2; dy *= Math.SQRT1_2; }
+        const smooth = 1 - Math.exp(-12 * dt);
+        const windDistance = Math.abs(bird.y - wind.y);
+        const windStrength = wind.active && windDistance < 105 ? (350 + 30 * (1 - windDistance / 105)) * wind.direction : 0;
+        const moveSpeed = inventory.upgrades.includes('swift') ? 270 : 250;
+        bird.vx += (dx * moveSpeed + windStrength - bird.vx) * smooth;
+        bird.vy += (dy * moveSpeed - bird.vy) * smooth;
+        bird.x = clamp(bird.x + bird.vx * dt, BIRD_RADIUS + 5, width - BIRD_RADIUS - 5);
+        bird.y = Math.max(BIRD_RADIUS + 7, bird.y + bird.vy * dt);
+        if (bird.y + BIRD_RADIUS >= GROUND) { bird.y = GROUND - BIRD_RADIUS; endGame(); return; }
+        for (const pipe of pipes) {
+          pipe.x -= speed * dt;
+          if (pipe.moving) pipe.center = clamp(pipe.baseCenter + Math.sin(flightTime * 2.1 + pipe.phase) * pipe.amplitude, 145, 380);
+          const gapTop = pipe.center - pipe.gap / 2;
+          const gapBottom = pipe.center + pipe.gap / 2;
+          if (circleRect(bird.x, bird.y, BIRD_RADIUS, pipe.x, 0, PIPE_WIDTH, gapTop) ||
+              circleRect(bird.x, bird.y, BIRD_RADIUS, pipe.x, gapBottom, PIPE_WIDTH, GROUND - gapBottom) ||
+              (pipe.hazard && Math.hypot(bird.x - (pipe.x + PIPE_WIDTH / 2), bird.y - pipe.center) < BIRD_RADIUS + 17)) {
+            endGame(); return;
+          }
+          const coinReach = BIRD_RADIUS + 12 + (inventory.upgrades.includes('magnet') ? 8 : 0);
+          if (pipe.coin && !pipe.coinCollected && Math.hypot(bird.x - (pipe.x + PIPE_WIDTH / 2), bird.y - pipe.center) < coinReach) {
+            pipe.coinCollected = true;
+            inventory.coins++;
+            saveInventory();
+            updateCoins();
+            announcement.textContent = `Kolikko kerätty! Kolikoita ${inventory.coins}.`;
+            tone(880, .12, 'sine', .04);
+            tone(1100, .14, 'sine', .035, .08);
+          }
+          if (!pipe.scored && pipe.x + PIPE_WIDTH < bird.x - BIRD_RADIUS) {
+            pipe.scored = true;
+            score++;
+            scoreEl.textContent = formatScore(score);
+            announcement.textContent = `Pisteet ${score}.`;
+            tone(640, .1, 'sine', .035);
+            tone(850, .15, 'sine', .035, .08);
+          }
+        }
+        pipes = pipes.filter(pipe => pipe.x + PIPE_WIDTH > -15);
+        if (gate.phase === 'idle' && score >= gate.nextScore) {
+          gate.phase = 'draining';
+          wind.pending = false;
+          wind.active = false;
+          windBadge.hidden = true;
+        }
+        if (gate.phase === 'draining' && pipes.length === 0) startGate();
+        if (gate.phase === 'warning') {
+          gate.timer -= dt;
+          if (gate.timer <= 0) gate.phase = 'sweep';
+        } else if (gate.phase === 'sweep') {
+          gate.y += (285 + Math.min(35, score * 1.3)) * dt;
+          const left = gate.center - gate.gap / 2;
+          const right = gate.center + gate.gap / 2;
+          if (circleRect(bird.x, bird.y, BIRD_RADIUS, 0, gate.y, left, 26) ||
+              circleRect(bird.x, bird.y, BIRD_RADIUS, right, gate.y, width - right, 26)) {
+            endGame(); return;
+          }
+          if (gate.y > GROUND + 26) {
+            gate.phase = 'idle';
+            gate.nextScore = score + 5;
+            gateBadge.hidden = true;
+            wind.remaining = 4;
+            announcement.textContent = 'Hienosti väistetty! Lento jatkuu.';
+            tone(700, .12, 'sine', .04);
+          }
+        }
+        if (gate.phase === 'idle' && wind.pending && pipes.length === 0) startWind();
+        const lastPipe = pipes[pipes.length - 1];
+        const spacing = 320;
+        if (gate.phase === 'idle' && !wind.pending && (!lastPipe || lastPipe.x < width + 85 - spacing)) {
+          // After a gust or gate, give the player time and a reachable first opening.
+          lastGap = lastPipe ? clamp(lastGap + (Math.random() - .5) * 150, 155, 370) : clamp(bird.y, 155, 370);
+          const pipe = makePipe(lastPipe ? lastPipe.x + spacing : width + (wind.active ? 100 : 400), lastGap, nextPipeIndex++);
+          if (!lastPipe) { pipe.moving = false; pipe.hazard = false; }
+          pipes.push(pipe);
+        }
+      }
+
+      function roundedRect(x, y, w, h, r, fill, stroke, lineWidth = 2) {
+        if (w <= 0 || h <= 0) return;
+        r = Math.min(r, w / 2, h / 2);
+        ctx.beginPath();
+        ctx.moveTo(x + r, y);
+        ctx.arcTo(x + w, y, x + w, y + h, r);
+        ctx.arcTo(x + w, y + h, x, y + h, r);
+        ctx.arcTo(x, y + h, x, y, r);
+        ctx.arcTo(x, y, x + w, y, r);
+        ctx.closePath();
+        if (fill) { ctx.fillStyle = fill; ctx.fill(); }
+        if (stroke) { ctx.lineWidth = lineWidth; ctx.strokeStyle = stroke; ctx.stroke(); }
+      }
+      function ellipse(x, y, rx, ry, fill, stroke, lineWidth = 2) {
+        ctx.beginPath(); ctx.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2);
+        if (fill) { ctx.fillStyle = fill; ctx.fill(); }
+        if (stroke) { ctx.lineWidth = lineWidth; ctx.strokeStyle = stroke; ctx.stroke(); }
+      }
+      function cloud(x, y, scale, opacity = .8) {
+        ctx.save(); ctx.translate(x, y); ctx.scale(scale, scale); ctx.globalAlpha = opacity;
+        ctx.fillStyle = '#fffdf0';
+        ctx.beginPath(); ctx.moveTo(-53, 9); ctx.bezierCurveTo(-66, 9, -66, -9, -50, -12); ctx.bezierCurveTo(-45, -35, -15, -37, -5, -19); ctx.bezierCurveTo(10, -42, 44, -28, 40, -8); ctx.bezierCurveTo(61, -9, 66, 9, 50, 10); ctx.closePath(); ctx.fill();
+        ctx.restore();
+      }
+      function drawHills(color, base, amplitude, period, offset) {
+        ctx.beginPath(); ctx.moveTo(0, HEIGHT); ctx.lineTo(0, base);
+        for (let x = 0; x <= width + 10; x += 10) {
+          const y = base + Math.sin((x + offset) / period) * amplitude + Math.sin((x + offset) / (period * .46)) * amplitude * .18;
+          ctx.lineTo(x, y);
+        }
+        ctx.lineTo(width, HEIGHT); ctx.closePath(); ctx.fillStyle = color; ctx.fill();
+      }
+      function drawBackground() {
+        const sky = ctx.createLinearGradient(0, 0, 0, HEIGHT);
+        sky.addColorStop(0, '#80d5d1'); sky.addColorStop(.64, '#c1e9cc'); sky.addColorStop(1, '#f0edb9');
+        ctx.fillStyle = sky; ctx.fillRect(0, 0, width, HEIGHT);
+        const sunX = width * .78;
+        ellipse(sunX, 110, 57, 57, '#fff3be55');
+        ellipse(sunX, 110, 39, 39, '#fff4c9');
+        const cloudShift = scenery * .12;
+        const loop = width + 300;
+        [[110, 118, .75], [390, 205, .55], [710, 75, .7], [1020, 185, .85], [1360, 125, .6]].forEach(([x, y, s]) => {
+          const actualX = ((x - cloudShift) % loop + loop) % loop - 100;
+          cloud(actualX, y, s, .78);
+        });
+        ctx.strokeStyle = '#4f998b88'; ctx.lineWidth = 2; ctx.lineCap = 'round';
+        for (let i = 0; i < 3; i++) {
+          const x = ((width * .57 + i * 30 - scenery * .035) % (width + 100) + width + 100) % (width + 100) - 50;
+          const y = 180 + i % 2 * 14;
+          ctx.beginPath(); ctx.moveTo(x - 6, y); ctx.quadraticCurveTo(x - 3, y - 5, x, y); ctx.quadraticCurveTo(x + 3, y - 5, x + 6, y); ctx.stroke();
+        }
+        drawHills('#a9d7b5', 430, 29, 115, scenery * .16);
+        drawHills('#83c19e', 473, 38, 96, scenery * .3 + 90);
+        drawHills('#69a984', 508, 25, 70, scenery * .45 + 20);
+        for (let i = -1; i < Math.ceil(width / 145) + 2; i++) {
+          const x = i * 145 - (scenery * .5 % 145);
+          const treeY = 510 + Math.sin(i * 2) * 8;
+          ctx.fillStyle = '#578f6f'; ctx.fillRect(x - 2, treeY - 22, 4, 29);
+          ellipse(x, treeY - 28, 16, 21, '#71ae86');
+          ellipse(x - 8, treeY - 24, 11, 13, '#80bc91');
+        }
+      }
+      function drawWind() {
+        if (!wind.active) return;
+        const band = ctx.createLinearGradient(0, wind.y - 105, 0, wind.y + 105);
+        band.addColorStop(0, '#f5fff000');
+        band.addColorStop(.5, '#f5fff035');
+        band.addColorStop(1, '#f5fff000');
+        ctx.fillStyle = band;
+        ctx.fillRect(0, wind.y - 105, width, 210);
+        ctx.save();
+        ctx.strokeStyle = '#f8fff1bd';
+        ctx.lineWidth = 3;
+        ctx.lineCap = 'round';
+        const span = width + 200;
+        const offsets = [-74, -50, -26, 0, 26, 50, 74];
+        for (let i = 0; i < offsets.length; i++) {
+          const x = (((i * 173 + wind.elapsed * 160 * wind.direction) % span) + span) % span - 100;
+          const y = wind.y + offsets[i];
+          ctx.beginPath();
+          ctx.moveTo(x - wind.direction * 29, y);
+          ctx.quadraticCurveTo(x, y - 6, x + wind.direction * 29, y);
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(x + wind.direction * 19, y - 5);
+          ctx.lineTo(x + wind.direction * 29, y);
+          ctx.lineTo(x + wind.direction * 19, y + 5);
+          ctx.stroke();
+        }
+        // The cloud faces the direction in which the gust pushes the bird.
+        ctx.translate(wind.direction > 0 ? 35 : width - 35, wind.y);
+        ctx.scale(wind.direction, 1);
+        cloud(0, 0, .8, .98);
+        ellipse(9, -11, 3, 4, '#396e66');
+        ellipse(23, -10, 3, 4, '#396e66');
+        ellipse(30, -1, 4, 5, '#7fb1a2');
+        ellipse(12, 0, 5, 2.5, '#f3c8b4');
+        ctx.restore();
+      }
+      function drawGate() {
+        if (gate.phase !== 'warning' && gate.phase !== 'sweep') return;
+        const left = gate.center - gate.gap / 2;
+        const right = gate.center + gate.gap / 2;
+        ctx.save();
+        ctx.fillStyle = '#ffe7a039';
+        ctx.fillRect(left, 0, gate.gap, GROUND);
+        ctx.strokeStyle = '#fff4c2aa';
+        ctx.lineWidth = 3;
+        ctx.setLineDash([10, 9]);
+        ctx.beginPath(); ctx.moveTo(left, 0); ctx.lineTo(left, GROUND); ctx.moveTo(right, 0); ctx.lineTo(right, GROUND); ctx.stroke();
+        ctx.setLineDash([]);
+        if (gate.phase === 'warning') {
+          ctx.fillStyle = '#fff1c6';
+          ctx.font = 'bold 28px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText('↓', gate.center, 110 + Math.sin(animTime * 6) * 6);
+        } else {
+          function rail(x, w) {
+            if (w <= 0) return;
+            roundedRect(x, gate.y, w, 26, 4, '#f3b853', '#956333', 3);
+            ctx.save();
+            ctx.beginPath(); ctx.rect(x + 2, gate.y + 2, Math.max(0, w - 4), 22); ctx.clip();
+            ctx.strokeStyle = '#cf8750'; ctx.lineWidth = 8;
+            for (let stripe = x - 30; stripe < x + w + 30; stripe += 38) {
+              ctx.beginPath(); ctx.moveTo(stripe, gate.y + 27); ctx.lineTo(stripe + 24, gate.y - 1); ctx.stroke();
+            }
+            ctx.restore();
+          }
+          rail(0, left);
+          rail(right, width - right);
+        }
+        ctx.restore();
+      }
+      function drawPipe(pipe) {
+        const x = pipe.x;
+        const top = pipe.center - pipe.gap / 2;
+        const bottom = pipe.center + pipe.gap / 2;
+        const outline = '#2d6956';
+        function part(y, h, isTop) {
+          if (h <= 0) return;
+          const body = ctx.createLinearGradient(x, 0, x + PIPE_WIDTH, 0);
+          body.addColorStop(0, '#69b37e'); body.addColorStop(.26, '#98d89a'); body.addColorStop(.7, '#6dbb82'); body.addColorStop(1, '#4d9f70');
+          ctx.fillStyle = body; ctx.strokeStyle = outline; ctx.lineWidth = 3;
+          ctx.fillRect(x + 8, y, PIPE_WIDTH - 16, h); ctx.strokeRect(x + 8, y - 2, PIPE_WIDTH - 16, h + 4);
+          ctx.fillStyle = '#d5f2ad80'; ctx.fillRect(x + 18, y, 8, h);
+          ctx.fillStyle = '#367e60'; ctx.fillRect(x + PIPE_WIDTH - 21, y, 6, h);
+          const capY = isTop ? y + h - 28 : y;
+          roundedRect(x, capY, PIPE_WIDTH, 28, 5, pipe.moving ? '#e3b96a' : '#70c18a', outline, 3);
+          roundedRect(x + 6, capY + 5, PIPE_WIDTH - 12, 5, 2, '#b8e9a9');
+          ctx.fillStyle = '#458d68'; ctx.fillRect(x + 3, capY + 21, PIPE_WIDTH - 6, 4);
+          ellipse(x + 10, capY + 14, 2, 2, '#34765c'); ellipse(x + PIPE_WIDTH - 10, capY + 14, 2, 2, '#34765c');
+          if (pipe.moving) {
+            ctx.fillStyle = '#536c48'; ctx.font = 'bold 19px sans-serif'; ctx.textAlign = 'center';
+            ctx.fillText('↕', x + PIPE_WIDTH / 2, capY + 20);
+            ctx.textAlign = 'start';
+          }
+        }
+        part(0, top, true);
+        part(bottom, GROUND - bottom, false);
+      }
+      function drawHazard(pipe) {
+        ctx.save();
+        ctx.translate(pipe.x + PIPE_WIDTH / 2, pipe.center);
+        ctx.rotate(animTime * 3);
+        ctx.beginPath();
+        for (let i = 0; i < 16; i++) {
+          const angle = i * Math.PI / 8;
+          const radius = i % 2 ? 13 : 20;
+          const x = Math.cos(angle) * radius;
+          const y = Math.sin(angle) * radius;
+          if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        }
+        ctx.closePath();
+        ctx.fillStyle = '#f38357'; ctx.fill();
+        ctx.strokeStyle = '#a94f3c'; ctx.lineWidth = 3; ctx.stroke();
+        ellipse(0, 0, 8, 8, '#ffcc78', '#a94f3c', 2);
+        ellipse(0, 0, 2.5, 2.5, '#a94f3c');
+        ctx.restore();
+      }
+      function drawCoin(pipe) {
+        const x = pipe.x + PIPE_WIDTH / 2;
+        const y = pipe.center;
+        const shimmer = .85 + .15 * Math.cos(animTime * 4);
+        ellipse(x, y, 12 * shimmer, 14, '#ffd05a', '#b5782b', 2.5);
+        ellipse(x, y, 7 * shimmer, 9, '#ffeb9e', '#d9a33e', 1.5);
+        ctx.strokeStyle = '#d18e2e'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(x, y - 5); ctx.lineTo(x, y + 5); ctx.stroke();
+      }
+      function drawGround() {
+        ctx.fillStyle = '#417e5b'; ctx.fillRect(0, GROUND, width, 6);
+        ctx.fillStyle = '#90c97f'; ctx.fillRect(0, GROUND + 6, width, 13);
+        ctx.fillStyle = '#cee3a2'; ctx.fillRect(0, GROUND + 19, width, HEIGHT - GROUND - 19);
+        ctx.fillStyle = '#eaf1be'; ctx.fillRect(0, GROUND + 19, width, 5);
+        ctx.strokeStyle = '#a9c888'; ctx.lineWidth = 3;
+        for (let x = -40 - (scenery * .7 % 42); x < width + 40; x += 42) {
+          ctx.beginPath(); ctx.moveTo(x, GROUND + 44); ctx.lineTo(x + 13, GROUND + 31); ctx.stroke();
+        }
+      }
+      function drawBird() {
+        const bob = state === 'ready' ? Math.sin(animTime * 3) * 5 : 0;
+        const tilt = state === 'playing' ? clamp(bird.vy / 1000, -.25, .25) : -.08;
+        const skin = skins.find(item => item.id === inventory.equipped) || skins[0];
+        ctx.save(); ctx.translate(bird.x, bird.y + bob); ctx.rotate(tilt);
+        let bodyColor = skin.body;
+        if (skin.accessory === 'rainbow') {
+          bodyColor = ctx.createLinearGradient(-25, -20, 25, 20);
+          bodyColor.addColorStop(0, '#f3a3b6'); bodyColor.addColorStop(.35, '#ffe19a');
+          bodyColor.addColorStop(.7, '#9fe5ce'); bodyColor.addColorStop(1, '#c7a5f2');
+        }
+        // Tail and little feather tuft.
+        ctx.fillStyle = skin.tail; ctx.strokeStyle = '#845638'; ctx.lineWidth = 2.5;
+        ctx.beginPath(); ctx.moveTo(-20, 1); ctx.lineTo(-36, -8); ctx.lineTo(-32, 1); ctx.lineTo(-38, 6); ctx.lineTo(-18, 10); ctx.closePath(); ctx.fill(); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(-8, -19); ctx.quadraticCurveTo(-14, -30, -5, -27); ctx.lineTo(1, -21); ctx.quadraticCurveTo(1, -32, 8, -26); ctx.lineTo(12, -18); ctx.closePath(); ctx.fillStyle = skin.tail; ctx.fill(); ctx.stroke();
+        ellipse(0, 0, 27, 23, bodyColor, '#845638', 2.5);
+        ellipse(5, 11, 18, 10, skin.belly);
+        const flap = Math.sin(animTime * (state === 'playing' ? 14 : 8));
+        ctx.save(); ctx.translate(-9, 5); ctx.rotate(-.35 + flap * .35);
+        ellipse(-4, 0, 15, 10, skin.wing, '#a97539', 2);
+        ctx.strokeStyle = '#d8903a'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(-12, -1); ctx.quadraticCurveTo(-5, 4, 2, 2); ctx.stroke(); ctx.restore();
+        ellipse(13, -8, 8, 9, '#fffdf0', '#845638', 1.5);
+        ellipse(16, -7, 3, 4, '#30473a');
+        ellipse(17, -9, 1, 1.3, '#ffffff');
+        ctx.beginPath(); ctx.moveTo(22, 0); ctx.lineTo(36, 5); ctx.lineTo(23, 10); ctx.closePath(); ctx.fillStyle = '#f47a4b'; ctx.fill(); ctx.strokeStyle = '#a95537'; ctx.lineWidth = 2; ctx.stroke();
+        ellipse(12, 6, 4, 2.5, '#ef9c77');
+        if (skin.accessory === 'crown') {
+          ctx.beginPath(); ctx.moveTo(-12, -20); ctx.lineTo(-15, -33); ctx.lineTo(-7, -27); ctx.lineTo(-1, -36); ctx.lineTo(5, -27); ctx.lineTo(12, -33); ctx.lineTo(10, -20); ctx.closePath();
+          ctx.fillStyle = '#ffdf67'; ctx.fill(); ctx.strokeStyle = '#a87932'; ctx.lineWidth = 2; ctx.stroke();
+          ellipse(-1, -24, 2, 2, '#f17c65');
+        } else if (skin.accessory === 'rainbow') {
+          ctx.fillStyle = '#fff9d6'; ctx.font = 'bold 14px sans-serif'; ctx.fillText('✦', -32, -19);
+        }
+        ctx.restore();
+      }
+      function draw() {
+        drawBackground();
+        drawWind();
+        drawGate();
+        if (state === 'ready') drawPipe({ x: width * .79, center: 280, gap: 210 });
+        else pipes.forEach(pipe => { drawPipe(pipe); if (pipe.hazard) drawHazard(pipe); if (pipe.coin && !pipe.coinCollected) drawCoin(pipe); });
+        drawBird();
+        drawGround();
+      }
+      function frame(time) {
+        const dt = lastTime ? Math.min((time - lastTime) / 1000, .04) : 0;
+        lastTime = time;
+        update(dt);
+        draw();
+        requestAnimationFrame(frame);
+      }
+      requestAnimationFrame(frame);
+    })();
+  </script>
+</body>
+</html>
