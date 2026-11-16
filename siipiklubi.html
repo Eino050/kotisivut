@@ -538,13 +538,22 @@
         { id: 'berry', name: 'Vadelmapilvi', price: 3, description: 'Pehmeän vaaleanpunainen asu.', body: '#f59ca8', belly: '#ffe1d7', wing: '#e7798c', tail: '#d97080' },
         { id: 'mint', name: 'Minttusiipi', price: 6, description: 'Raikas mintunvihreä asu.', body: '#9de2bf', belly: '#e3fff0', wing: '#64c59f', tail: '#5ab894' },
         { id: 'night', name: 'Iltataivas', price: 10, description: 'Pehmeää sinistä iltataivasta.', body: '#b3baf4', belly: '#eeeaff', wing: '#8e9cdb', tail: '#7888ca' },
+        { id: 'peach', name: 'Persikkapilvi', price: 4, description: 'Lämmin persikanoranssi väri.', body: '#ffbd92', belly: '#ffe8cb', wing: '#ef936e', tail: '#de8462' },
+        { id: 'ocean', name: 'Merituuli', price: 7, description: 'Kirkkaan turkoosi lentäjä.', body: '#72cfe2', belly: '#d6f7f8', wing: '#4ba8c4', tail: '#418da9' },
+        { id: 'lavender', name: 'Laventeli', price: 12, description: 'Pehmeä liila väri.', body: '#c9a7e7', belly: '#f4e5ff', wing: '#a57acb', tail: '#9365b9' },
+        { id: 'snow', name: 'Lumipilvi', price: 18, description: 'Huurteisen valkoinen lentäjä.', body: '#edf7f2', belly: '#ffffff', wing: '#bfddd8', tail: '#a7ccc5' },
+        { id: 'emerald', name: 'Smaragdilintu', price: 55, description: 'Harvinainen smaragdinvihreä väri.', body: '#4cad83', belly: '#bcefc8', wing: '#328e6c', tail: '#29775c' },
         { id: 'gold', name: 'Kultakruunu', price: 80, description: 'Harvinainen asu kultaisella kruunulla.', body: '#f7d558', belly: '#fff0ac', wing: '#e9a83c', tail: '#d99030', accessory: 'crown' },
         { id: 'rainbow', name: 'Sateenkaaritähti', price: 150, description: 'Todella harvinainen sateenkaariasu.', body: '#e5b0f2', belly: '#fff0ff', wing: '#b389d9', tail: '#e98eb0', accessory: 'rainbow' }
       ];
       const accessories = [
         { id: 'shades', slot: 'eyes', name: 'Aurinkolasit', price: 4, icon: '◉', description: 'Tyylikkäät arskat suojaavat taivaan häikäisyltä.' },
         { id: 'clubhat', slot: 'head', name: 'Siipiklubi-hattu', price: 5, icon: '✦', description: 'Vihreä klubihattu kaikille lentäjille. Korvaa kruunun käytössä ollessaan.' },
-        { id: 'scarf', slot: 'neck', name: 'Lentäjän huivi', price: 6, icon: '≈', description: 'Punainen huivi hulmuaa mukana lennolla.' }
+        { id: 'scarf', slot: 'neck', name: 'Lentäjän huivi', price: 6, icon: '≈', description: 'Punainen huivi hulmuaa mukana lennolla.' },
+        { id: 'goggles', slot: 'eyes', name: 'Lentäjän lasit', price: 7, icon: '◌', description: 'Kuparireunaiset lentolasit korkeisiin lentoihin.' },
+        { id: 'partyhat', slot: 'head', name: 'Juhlahattu', price: 8, icon: '▲', description: 'Värikäs hattu jokaiseen juhlalentoon.' },
+        { id: 'bowtie', slot: 'neck', name: 'Rusetti', price: 9, icon: '✿', description: 'Sininen rusetti viimeistelee tyylin.' },
+        { id: 'starhelmet', slot: 'head', name: 'Tähtikypärä', price: 65, icon: '★', description: 'Harvinainen violetti tähtikypärä.' }
       ];
       const upgrades = [
         { id: 'swift', name: 'Kevyet siivet', price: 5, icon: '↗', description: 'Ohjausnopeus kasvaa vain 8 %. Tuuli pysyy vastustamattomana.' },
@@ -1327,6 +1336,10 @@
           ctx.fillStyle = '#d85643'; ctx.strokeStyle = '#933d35'; ctx.lineWidth = 1.5;
           ctx.beginPath(); ctx.moveTo(-10, 14); ctx.lineTo(-29, 10 + Math.sin(animTime * 6) * 2); ctx.lineTo(-25, 17); ctx.lineTo(-29, 22); ctx.lineTo(-7, 19); ctx.closePath(); ctx.fill(); ctx.stroke();
           roundedRect(-10, 13, 27, 7, 3, '#ed7154', '#933d35', 1.5);
+        } else if (inventory.equippedAccessories.neck === 'bowtie') {
+          ctx.beginPath(); ctx.moveTo(5, 16); ctx.lineTo(-4, 11); ctx.lineTo(-4, 21); ctx.lineTo(5, 17); ctx.lineTo(14, 21); ctx.lineTo(14, 11); ctx.closePath();
+          ctx.fillStyle = '#579cc8'; ctx.fill(); ctx.strokeStyle = '#305b7b'; ctx.lineWidth = 1.5; ctx.stroke();
+          ellipse(5, 16, 2.5, 3, '#d2edfa', '#305b7b', 1);
         }
         ellipse(13, -8, 8, 9, '#fffdf0', '#845638', 1.5);
         ellipse(16, -7, 3, 4, '#30473a');
@@ -1337,10 +1350,17 @@
           ellipse(14, -8, 9, 7, '#263c3b', '#142e30', 2);
           ctx.strokeStyle = '#96d8d1'; ctx.lineWidth = 1.5;
           ctx.beginPath(); ctx.moveTo(10, -10); ctx.lineTo(14, -12); ctx.stroke();
+        } else if (inventory.equippedAccessories.eyes === 'goggles') {
+          ctx.strokeStyle = '#8a5735'; ctx.lineWidth = 3;
+          ctx.beginPath(); ctx.moveTo(0, -10); ctx.lineTo(7, -9); ctx.stroke();
+          ellipse(14, -8, 9, 8, '#bd7b44', '#70452f', 2);
+          ellipse(14, -8, 6, 5, '#8ed6e6', '#f5d591', 1.5);
+          ctx.strokeStyle = '#e5fbfa'; ctx.lineWidth = 1.5;
+          ctx.beginPath(); ctx.moveTo(11, -9); ctx.lineTo(14, -11); ctx.stroke();
         }
         ctx.beginPath(); ctx.moveTo(22, 0); ctx.lineTo(36, 5); ctx.lineTo(23, 10); ctx.closePath(); ctx.fillStyle = '#f47a4b'; ctx.fill(); ctx.strokeStyle = '#a95537'; ctx.lineWidth = 2; ctx.stroke();
         ellipse(12, 6, 4, 2.5, '#ef9c77');
-        if (skin.accessory === 'crown' && inventory.equippedAccessories.head !== 'clubhat') {
+        if (skin.accessory === 'crown' && !inventory.equippedAccessories.head) {
           ctx.beginPath(); ctx.moveTo(-12, -20); ctx.lineTo(-15, -33); ctx.lineTo(-7, -27); ctx.lineTo(-1, -36); ctx.lineTo(5, -27); ctx.lineTo(12, -33); ctx.lineTo(10, -20); ctx.closePath();
           ctx.fillStyle = '#ffdf67'; ctx.fill(); ctx.strokeStyle = '#a87932'; ctx.lineWidth = 2; ctx.stroke();
           ellipse(-1, -24, 2, 2, '#f17c65');
@@ -1352,6 +1372,16 @@
           ctx.fillStyle = '#3d8063'; ctx.fill(); ctx.strokeStyle = '#285342'; ctx.lineWidth = 2; ctx.stroke();
           roundedRect(-16, -23, 34, 5, 2, '#285e4c', '#285342', 1);
           ctx.fillStyle = '#ffe28a'; ctx.font = 'bold 9px sans-serif'; ctx.fillText('✦', -3, -25);
+        } else if (inventory.equippedAccessories.head === 'partyhat') {
+          ctx.beginPath(); ctx.moveTo(-13, -21); ctx.lineTo(-1, -41); ctx.lineTo(12, -21); ctx.closePath();
+          ctx.fillStyle = '#ee8d9f'; ctx.fill(); ctx.strokeStyle = '#a05268'; ctx.lineWidth = 2; ctx.stroke();
+          ellipse(-1, -41, 3, 3, '#ffe078', '#a05268', 1);
+          ctx.strokeStyle = '#ffe4a4'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(-7, -25); ctx.lineTo(7, -25); ctx.stroke();
+        } else if (inventory.equippedAccessories.head === 'starhelmet') {
+          ctx.beginPath(); ctx.moveTo(-14, -21); ctx.quadraticCurveTo(-15, -36, -1, -38); ctx.quadraticCurveTo(13, -37, 14, -21); ctx.closePath();
+          ctx.fillStyle = '#7066af'; ctx.fill(); ctx.strokeStyle = '#433e78'; ctx.lineWidth = 2; ctx.stroke();
+          roundedRect(-16, -23, 33, 5, 2, '#514989', '#433e78', 1);
+          ctx.fillStyle = '#ffe789'; ctx.font = 'bold 12px sans-serif'; ctx.fillText('★', -6, -25);
         }
         ctx.restore();
       }
