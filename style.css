@@ -23,7 +23,7 @@ nav a { transition: color .2s; }
 nav a:hover, .text-link:hover { color: var(--orange); }
 .nav-contact { border-bottom: 1px solid currentColor; padding-bottom: 5px; }
 .nav-contact span { margin-left: 8px; }
-.hero { min-height: 650px; padding: 95px 13% 100px; display: flex; align-items: center; position: relative; overflow: hidden; color: #fff; }
+.hero { padding: 80px 13% 48px; display: flex; align-items: center; position: relative; overflow: hidden; color: #fff; }
 .hero::before { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(9,7,15,.7), rgba(9,7,15,.24) 44%, rgba(9,7,15,.05)); }
 .hero-copy { width: 52%; position: relative; z-index: 2; text-shadow: 0 2px 14px rgba(0,0,0,.7); }
 .eyebrow { font: 10px var(--mono); letter-spacing: 1.25px; color: #c0b9c8; }
@@ -35,8 +35,8 @@ h1 span { color: var(--orange); }
 .button:hover { background: var(--orange); transform: translateY(-2px); }
 .button span { font-size: 16px; }
 .section { padding: 105px 13%; }
-.about { background: rgba(9,7,15,.78); }
-.about-content { display: grid; grid-template-columns: 1fr 1fr; gap: 70px; align-items: start; margin-top: 37px; }
+.about { padding-top: 48px; background: rgba(9,7,15,.78); }
+.about-content { display: grid; grid-template-columns: 1fr 1fr; gap: 70px; align-items: start; margin-top: 24px; }
 h2 { margin: 0; font-size: clamp(34px, 4.5vw, 56px); line-height: 1.12; letter-spacing: -.06em; }
 .about-content > div { max-width: 390px; color: #ded9e2; font-size: 14px; line-height: 1.9; }
 .text-link { display: inline-block; margin-top: 13px; color: var(--paper); font-weight: 800; font-size: 12px; border-bottom: 1px solid #98968e; padding-bottom: 6px; }
@@ -46,13 +46,8 @@ h2 { margin: 0; font-size: clamp(34px, 4.5vw, 56px); line-height: 1.12; letter-s
 .section-heading .eyebrow { margin-bottom: 7px; }
 .section-heading h2 { font-size: 48px; }
 .project-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
-.project-visual { height: 275px; display: grid; place-items: center; overflow: hidden; }
-.project-orange .project-visual { background: #e8b994; }
-.project-blue .project-visual { background: #8eb7b4; }
-.visual-shape span { width: 154px; height: 154px; display: grid; place-items: center; border-radius: 50%; background: var(--orange); font-size: 76px; color: #f5d86e; box-shadow: 20px 15px 0 #20221e; transform: rotate(-12deg); }
-.visual-lines { background-image: repeating-linear-gradient(135deg, transparent 0 20px, #20221e 21px 22px); }
-.visual-lines span { width: 120px; height: 120px; display: grid; place-items: center; background: #e6c75b; border-radius: 50%; font-size: 55px; }
-.project-meta { display: flex; justify-content: space-between; margin-top: 22px; font: 9px var(--mono); letter-spacing: .8px; color: #c0b9c8; }
+.project-card { padding: 24px; border: 1px solid rgba(245,242,235,.16); background: rgba(9,7,15,.4); }
+.project-meta { display: flex; justify-content: space-between; font: 9px var(--mono); letter-spacing: .8px; color: #c0b9c8; }
 .project-card h3 { margin: 13px 0 6px; font-size: 20px; letter-spacing: -.5px; }
 .project-card > p { margin: 0; color: #ded9e2; font-size: 12px; line-height: 1.7; }
 footer { min-height: 100px; padding: 25px 8.3%; display: flex; align-items: center; justify-content: space-between; background: var(--ink); color: var(--paper); }
@@ -61,12 +56,12 @@ footer p { font-size: 11px; color: #c2c1b9; } footer p span { margin-left: 16px;
 
 @media (max-width: 760px) {
   .topbar { height: 72px; padding: 0 6%; } nav { gap: 17px; font-size: 10px; } nav a:first-child { display: none; }
-  .hero { min-height: 600px; padding: 60px 8%; }
+  .hero { padding: 56px 8% 40px; }
   .hero-copy { width: 100%; } h1 { font-size: clamp(52px, 16vw, 78px); }
   .section { padding: 75px 8%; }
+  .about { padding-top: 40px; }
   .about-content { grid-template-columns: 1fr; gap: 25px; }
   .section-heading { display: block; } .section-heading h2 { font-size: 42px; margin-top: 20px; }
-  .project-grid { grid-template-columns: 1fr; gap: 42px; }
-  .project-visual { height: 260px; }
+  .project-grid { grid-template-columns: 1fr; gap: 18px; }
   footer { padding: 24px 6%; gap: 14px; flex-wrap: wrap; } footer p { font-size: 10px; } footer p span { display: block; margin: 5px 0 0; }
 }
