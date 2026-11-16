@@ -127,6 +127,7 @@
     .panel-menu { margin-top: 10px; padding: 7px 12px; border: 1px solid #a5bda7; border-radius: 8px; background: #e9f0da; color: #31584c; cursor: pointer; font-size: 10px; font-weight: 900; }
     .stage-stamp { position: absolute; bottom: 18px; left: 22px; color: #42664b; font-size: 8px; letter-spacing: 1.4px; pointer-events: none; }
     .stage-stamp.right { right: 22px; left: auto; }
+    .combo-badge { position: absolute; bottom: 40px; left: 14px; padding: 6px 9px; border: 1px solid #b78430; border-radius: 8px; background: #fff1bdeF; color: #71501f; font-size: 10px; font-weight: 900; letter-spacing: .4px; pointer-events: none; }
     .overlay { position: absolute; inset: 0; display: grid; place-items: center; padding: 16px; background: #214a3c1c; }
     .panel {
       position: relative;
@@ -390,6 +391,7 @@
         </div>
         <div class="wind-badge" id="windBadge" hidden>☁ TUULI ←</div>
         <div class="gate-badge" id="gateBadge" hidden>SIIRRY AUKKOON →</div>
+        <div class="combo-badge" id="comboBadge" hidden>✦ KOMBO 0</div>
         <div class="stage-stamp">✦ &nbsp; LENTOTILA: VAPAA</div><div class="stage-stamp right">VAUHTI <span id="speedLabel">1.0×</span> &nbsp; ✦</div>
 
         <div class="overlay" id="overlay">
@@ -470,7 +472,7 @@
         <div class="shop-header-actions"><div class="shop-balance"><span class="coin-mark" aria-hidden="true">●</span> <span id="shopBalance">0</span></div><button class="shop-close" id="closeShop" type="button" aria-label="Sulje kauppa">×</button></div>
       </div>
       <div class="shop-content">
-        <p class="shop-intro" id="shopIntro">Kolikoita löytyy putkien aukoista ja taivaalta. Yhdistele värejä ja asusteita – ne muuttavat vain ulkonäköä.</p>
+        <p class="shop-intro" id="shopIntro">Kerää kolikot putkeen: joka kolmannesta saat bonuskolikon. Kombo katkeaa, jos kolikko jää taaksesi. Harvinainen violetti kolikko on kolmen arvoinen. Asut ja asusteet muuttavat vain ulkonäköä.</p>
         <div class="shop-feedback" id="shopMessage" role="status" hidden></div>
         <div class="shop-heading"><small>LÖYDÄ OMA TYYLISI</small><h3>Värit ja erikoisasut</h3></div>
         <div class="shop-grid" id="skinItems"></div>
@@ -495,6 +497,7 @@
       const pauseButton = document.getElementById('pauseButton');
       const windBadge = document.getElementById('windBadge');
       const gateBadge = document.getElementById('gateBadge');
+      const comboBadge = document.getElementById('comboBadge');
       const speedLabel = document.getElementById('speedLabel');
       const soundButton = document.getElementById('soundButton');
       const soundText = document.getElementById('soundText');
@@ -514,6 +517,7 @@
       let width = 1100;
       let state = 'ready';
       let score = 0;
+      let coinCombo = 0;
       let best = 0;
       let soundOn = true;
       let masterVolume = .4;
@@ -703,11 +707,13 @@
         document.getElementById('menuButton').hidden = next !== 'playing';
         windBadge.hidden = next !== 'playing' || !wind.active;
         gateBadge.hidden = next !== 'playing' || (gate.phase !== 'warning' && gate.phase !== 'sweep');
+        comboBadge.hidden = next !== 'playing' || coinCombo === 0;
         if (next === 'playing') playMusic(); else musicPlayer.pause();
       }
       function makePipe(x, center, index) {
         const moving = index >= 2 && index % 3 === 2;
         const hazard = index >= 4 && index % 4 === 0 && !moving;
+        const rareCoin = index % 16 === 13;
         return {
           x, center, baseCenter: center,
           gap: Math.max(154, 188 - score * 1.3) + (inventory.upgrades.includes('roomy') ? 20 : 0),
@@ -715,13 +721,15 @@
           amplitude: Math.min(40, 26 + score * .5),
           hazard, coin: index % 3 === 0 && !moving && !hazard,
           coinOffset: Math.floor(index / 3) % 2 === 0 ? -40 : 40,
-          skyCoinY: clamp(center + (Math.floor(index / 4) % 2 === 0 ? 65 : -65), 75, GROUND - 75),
-          coinCollected: false, skyCoin: index % 4 === 1, skyCoinCollected: false, scored: false
+          skyCoinXOffset: rareCoin ? -100 : -70,
+          skyCoinY: clamp(center + (rareCoin ? (index % 32 === 13 ? -105 : 105) : (Math.floor(index / 4) % 2 === 0 ? 65 : -65)), 75, GROUND - 75),
+          coinCollected: false, coinMissed: false, skyCoin: index % 4 === 1, skyCoinRare: rareCoin, skyCoinCollected: false, skyCoinMissed: false, scored: false
         };
       }
       function startGame() {
         clearInput();
         score = 0;
+        coinCombo = 0;
         scoreEl.textContent = formatScore(score);
         bird = { x: Math.max(75, width * .24), y: 278, vx: 0, vy: 0 };
         lastGap = 278;
@@ -759,6 +767,7 @@
         }
         clearInput();
         score = 0;
+        coinCombo = 0;
         scoreEl.textContent = formatScore(score);
         pipes = [];
         wind.active = false;
@@ -971,13 +980,34 @@
         const nearestY = clamp(cy, y, y + h);
         return (cx - nearestX) ** 2 + (cy - nearestY) ** 2 < radius ** 2;
       }
-      function collectCoin() {
-        inventory.coins++;
+      function collectCoin(rare = false) {
+        coinCombo++;
+        const bonus = coinCombo % 3 === 0 ? 1 : 0;
+        const amount = (rare ? 3 : 1) + bonus;
+        inventory.coins += amount;
         saveInventory();
         updateCoins();
-        announcement.textContent = `Kolikko kerätty! Kolikoita ${inventory.coins}.`;
+        comboBadge.textContent = `✦ KOMBO ${coinCombo}${bonus ? ' · +1 BONUS' : ''}`;
+        comboBadge.hidden = false;
+        announcement.textContent = `${rare ? 'Violetti kolikko' : 'Kolikko'} kerätty: +${amount}. Kombo ${coinCombo}. Kolikoita ${inventory.coins}.`;
         tone(880, .12, 'sine', .04);
         tone(1100, .14, 'sine', .035, .08);
+      }
+      function checkCoin(pipe, kind, x, y, reach, rare = false) {
+        const collected = kind === 'sky' ? 'skyCoinCollected' : 'coinCollected';
+        const missed = kind === 'sky' ? 'skyCoinMissed' : 'coinMissed';
+        if (pipe[collected]) return;
+        if (Math.hypot(bird.x - x, bird.y - y) < reach) {
+          pipe[collected] = true;
+          collectCoin(rare);
+        } else if (!pipe[missed] && x + reach < bird.x) {
+          pipe[missed] = true;
+          if (coinCombo) {
+            coinCombo = 0;
+            comboBadge.hidden = true;
+            announcement.textContent = 'Kolikko jäi taakse – kombo katkesi.';
+          }
+        }
       }
       function startGate() {
         gate.gap = 130 + (inventory.upgrades.includes('roomy') ? 10 : 0);
@@ -1057,14 +1087,8 @@
             endGame(); return;
           }
           const coinReach = BIRD_RADIUS + 5 + (inventory.upgrades.includes('magnet') ? 8 : 0);
-          if (pipe.coin && !pipe.coinCollected && Math.hypot(bird.x - (pipe.x + PIPE_WIDTH / 2), bird.y - (pipe.center + pipe.coinOffset)) < coinReach) {
-            pipe.coinCollected = true;
-            collectCoin();
-          }
-          if (pipe.skyCoin && !pipe.skyCoinCollected && Math.hypot(bird.x - (pipe.x - 70), bird.y - pipe.skyCoinY) < coinReach) {
-            pipe.skyCoinCollected = true;
-            collectCoin();
-          }
+          if (pipe.skyCoin) checkCoin(pipe, 'sky', pipe.x + pipe.skyCoinXOffset, pipe.skyCoinY, coinReach, pipe.skyCoinRare);
+          if (pipe.coin) checkCoin(pipe, 'pipe', pipe.x + PIPE_WIDTH / 2, pipe.center + pipe.coinOffset, coinReach);
           if (!pipe.scored && pipe.x + PIPE_WIDTH < bird.x - BIRD_RADIUS) {
             pipe.scored = true;
             score++;
@@ -1298,12 +1322,19 @@
         ellipse(0, 0, 3, 3, '#e1e9d9', '#425853', 1);
         ctx.restore();
       }
-      function drawCoin(x, y) {
+      function drawCoin(x, y, rare = false) {
         const shimmer = .85 + .15 * Math.cos(animTime * 4);
-        ellipse(x, y, 12 * shimmer, 14, '#ffd05a', '#b5782b', 2.5);
-        ellipse(x, y, 7 * shimmer, 9, '#ffeb9e', '#d9a33e', 1.5);
-        ctx.strokeStyle = '#d18e2e'; ctx.lineWidth = 2;
-        ctx.beginPath(); ctx.moveTo(x, y - 5); ctx.lineTo(x, y + 5); ctx.stroke();
+        if (rare) {
+          ellipse(x, y, 17 * shimmer, 19, '#a15cdd', '#623397', 2.5);
+          ellipse(x, y, 12 * shimmer, 14, '#d7a0f4', '#8651b7', 1.5);
+          ctx.save(); ctx.fillStyle = '#4f287e'; ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+          ctx.fillText('+3', x, y + 1); ctx.restore();
+        } else {
+          ellipse(x, y, 12 * shimmer, 14, '#ffd05a', '#b5782b', 2.5);
+          ellipse(x, y, 7 * shimmer, 9, '#ffeb9e', '#d9a33e', 1.5);
+          ctx.strokeStyle = '#d18e2e'; ctx.lineWidth = 2;
+          ctx.beginPath(); ctx.moveTo(x, y - 5); ctx.lineTo(x, y + 5); ctx.stroke();
+        }
       }
       function drawGround() {
         ctx.fillStyle = '#417e5b'; ctx.fillRect(0, GROUND, width, 6);
@@ -1417,7 +1448,7 @@
           drawPipe(pipe);
           if (pipe.hazard) drawHazard(pipe);
           if (pipe.coin && !pipe.coinCollected) drawCoin(pipe.x + PIPE_WIDTH / 2, pipe.center + pipe.coinOffset);
-          if (pipe.skyCoin && !pipe.skyCoinCollected) drawCoin(pipe.x - 70, pipe.skyCoinY);
+          if (pipe.skyCoin && !pipe.skyCoinCollected) drawCoin(pipe.x + pipe.skyCoinXOffset, pipe.skyCoinY, pipe.skyCoinRare);
         });
         drawBird();
         drawGround();
