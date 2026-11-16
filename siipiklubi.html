@@ -473,7 +473,7 @@
         <div class="shop-header-actions"><div class="shop-balance"><span class="coin-mark" aria-hidden="true">●</span> <span id="shopBalance">0</span></div><button class="shop-close" id="closeShop" type="button" aria-label="Sulje kauppa">×</button></div>
       </div>
       <div class="shop-content">
-        <p class="shop-intro" id="shopIntro">Kerää kolikot putkeen: toisesta kolikosta alkaen saat heti yhden bonuskolikon jokaisesta. Ansaitut bonukset säilyvät, vaikka kombo katkeaa. Harvinainen violetti kolikko on kolmen arvoinen. Asut ja asusteet muuttavat vain ulkonäköä.</p>
+        <p class="shop-intro" id="shopIntro">Kerää kolikot putkeen: kolmannesta alkaen saat heti bonusta, joka kasvaa kolmen kolikon välein. Ansaitut bonukset säilyvät, vaikka kombo katkeaa. Harvinainen violetti kolikko on kolmen arvoinen. Asut ja asusteet muuttavat vain ulkonäköä.</p>
         <div class="shop-feedback" id="shopMessage" role="status" hidden></div>
         <div class="shop-heading"><small>LÖYDÄ OMA TYYLISI</small><h3>Värit ja erikoisasut</h3></div>
         <div class="shop-grid" id="skinItems"></div>
@@ -991,12 +991,12 @@
       }
       function collectCoin(rare = false) {
         coinCombo++;
-        const bonus = coinCombo >= 2 ? 1 : 0;
+        const bonus = Math.floor(coinCombo / 3);
         const amount = (rare ? 3 : 1) + bonus;
         inventory.coins += amount;
         saveInventory();
         updateCoins();
-        comboBadge.textContent = `✦ KOMBO ${coinCombo}${bonus ? ' · +1 BONUS' : ''}`;
+        comboBadge.textContent = `✦ KOMBO ${coinCombo}${bonus ? ` · +${bonus} BONUS` : ''}`;
         comboBadge.hidden = false;
         announcement.textContent = `${rare ? 'Violetti kolikko' : 'Kolikko'} kerätty: +${amount}. Kombo ${coinCombo}. Kolikoita ${inventory.coins}.`;
         tone(880, .12, 'sine', .04);
