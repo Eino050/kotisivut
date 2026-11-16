@@ -229,6 +229,12 @@
       .how { justify-content: flex-start; }
       .how-divider, .how-item.task, .tip { display: none; }
     }
+    @media (min-width: 701px) {
+      .stage { width: min(100%, 480px, max(300px, calc((100dvh - 190px) * .8))); aspect-ratio: 4 / 5; margin-inline: auto; }
+      .wind-badge, .gate-badge { top: 65px; }
+      .panel { width: min(300px, 100%); padding: 20px; }
+      .panel h2 { font-size: 35px; }
+    }
     @media (max-width: 700px) {
       .app { width: min(100% - 28px, 520px); min-width: 0; padding-top: 15px; }
       .brand-name { font-size: 19px; }
