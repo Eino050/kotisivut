@@ -46,7 +46,7 @@
     }
     .topbar, .brand, .top-actions, .intro, .footer, .how, .how-item { display: flex; align-items: center; }
     .topbar { justify-content: space-between; }
-    .brand { gap: 11px; }
+    .brand { gap: 11px; padding: 0; border: 0; background: transparent; color: inherit; text-align: left; cursor: pointer; }
     .brand-mark {
       display: grid;
       place-items: center;
@@ -123,6 +123,8 @@
       box-shadow: 0 3px 0 #31584c; font-size: 15px; font-weight: 900; line-height: 1;
     }
     .pause-button:hover { background: #ffe7a1; }
+    .menu-button { width: auto; padding: 0 7px; font-size: 9px; letter-spacing: .4px; }
+    .panel-menu { margin-top: 10px; padding: 7px 12px; border: 1px solid #a5bda7; border-radius: 8px; background: #e9f0da; color: #31584c; cursor: pointer; font-size: 10px; font-weight: 900; }
     .stage-stamp { position: absolute; bottom: 18px; left: 22px; color: #42664b; font-size: 8px; letter-spacing: 1.4px; pointer-events: none; }
     .stage-stamp.right { right: 22px; left: auto; }
     .overlay { position: absolute; inset: 0; display: grid; place-items: center; padding: 16px; background: #214a3c1c; }
@@ -244,6 +246,7 @@
       h1 { font-size: 27px; }
       .stage { aspect-ratio: 4 / 5; border-width: 3px; border-radius: 15px; }
       .hud { padding: 15px; }
+      .hud-right { gap: 5px; }
       .wind-badge, .gate-badge { top: 65px; }
       .stage-stamp { bottom: 14px; left: 14px; font-size: 7px; }
       .stage-stamp.right { right: 14px; }
@@ -307,6 +310,10 @@
     @media (max-width: 700px) and (max-height: 700px) and (orientation: portrait) {
       .stage { width: min(100%, calc((100svh - 240px - env(safe-area-inset-bottom, 0px)) * .8)); }
     }
+    @media (max-width: 700px) and (max-height: 650px) and (orientation: portrait) {
+      .hud { padding: 10px; }
+      .score-icon { display: none; }
+    }
     @media (max-width: 700px) and (max-height: 600px) and (orientation: portrait) {
       .overlay { padding: 4px; }
       .panel { max-height: 100%; overflow-y: auto; }
@@ -338,12 +345,12 @@
 <body>
   <div class="app">
     <header class="topbar">
-      <div class="brand" aria-label="Siipiklubi, pieni lentokerho">
+      <button class="brand" id="homeButton" type="button" aria-label="Siipiklubi – siirry aloitusnäyttöön">
         <span class="brand-mark" aria-hidden="true">
           <svg viewBox="0 0 32 32" fill="none"><path d="M4 17c8.5.3 11-7.8 23-8-3.9 2.7-5 5.6-5.9 8.8-4.2 3.2-10 3.3-17.1-.8Z" fill="#315d4c"/><path d="M9 16.9c4.7-.2 8.3-1.8 12.9-4.4" stroke="#D4EDBA" stroke-width="1.5" stroke-linecap="round"/></svg>
         </span>
         <span><span class="brand-name">siipiklubi<b>.</b></span><span class="brand-sub">PIENI LENTOKERHO</span></span>
-      </div>
+      </button>
       <div class="top-actions">
         <span class="edition">✦ &nbsp; PELAA ILMAISEKSI</span>
         <button class="shop-button" id="openShop" type="button" aria-label="Avaa kauppa, kolikoita 0">KAUPPA <span class="coin-mark" aria-hidden="true">●</span><strong id="coinTotal">0</strong></button>
@@ -364,7 +371,7 @@
         <canvas id="game" role="img" aria-label="Lintu lentää pilvien keskellä ja väistää vihreitä putkia."></canvas>
         <div class="hud">
           <div class="score-block"><span class="score-icon" aria-hidden="true">✦</span><span><span class="hud-label">PISTEET</span><strong class="score-number" id="score">00</strong></span></div>
-          <div class="hud-right"><div class="best-block"><span class="hud-label">ENNÄTYS</span><strong class="best-number" id="best">00</strong></div><button id="pauseButton" class="pause-button" type="button" aria-label="Keskeytä peli" title="Keskeytä peli (P tai Esc)" hidden>Ⅱ</button></div>
+          <div class="hud-right"><div class="best-block"><span class="hud-label">ENNÄTYS</span><strong class="best-number" id="best">00</strong></div><button id="menuButton" class="pause-button menu-button" type="button" aria-label="Palaa aloitusnäyttöön" hidden>MENU</button><button id="pauseButton" class="pause-button" type="button" aria-label="Keskeytä peli" title="Keskeytä peli (P tai Esc)" hidden>Ⅱ</button></div>
         </div>
         <div class="wind-badge" id="windBadge" hidden>☁ TUULI ←</div>
         <div class="gate-badge" id="gateBadge" hidden>SIIRRY AUKKOON →</div>
@@ -397,6 +404,7 @@
             <h2>Lento<br><em>tauolla.</em></h2>
             <p>Maisemat odottavat juuri siinä, mihin jäit.</p>
             <button class="primary" id="resumeButton" type="button">JATKA LENTOA <span>↗</span></button>
+            <button class="panel-menu" type="button">MENU</button>
             <small class="panel-hint">P tai Esc jatkaa myös</small>
           </div>
           <div class="panel" id="overPanel" hidden>
@@ -405,6 +413,7 @@
             <p id="resultMessage">Jokainen lento vie sinua vähän pidemmälle.</p>
             <div class="result-row"><div><small>PISTEET</small><strong id="finalScore">00</strong></div><div><small>ENNÄTYS</small><strong id="finalBest">00</strong></div></div>
             <button class="primary" id="retryButton" type="button">LENNÄ UUDELLEEN <span>↗</span></button>
+            <button class="panel-menu" type="button">MENU</button>
             <small class="panel-hint">tai paina välilyöntiä</small>
           </div>
         </div>
@@ -648,6 +657,7 @@
         overlay.hidden = next === 'playing';
         Object.entries(panels).forEach(([name, panel]) => { panel.hidden = name !== next; });
         pauseButton.hidden = next !== 'playing';
+        document.getElementById('menuButton').hidden = next !== 'playing';
         windBadge.hidden = next !== 'playing' || !wind.active;
         gateBadge.hidden = next !== 'playing' || (gate.phase !== 'warning' && gate.phase !== 'sweep');
         if (next === 'playing') playMusic(); else musicPlayer.pause();
@@ -695,6 +705,26 @@
         lastTime = 0;
         announcement.textContent = 'Lento jatkuu.';
         tone(520, .1);
+      }
+      function goToMenu() {
+        if ((state === 'playing' || state === 'paused') && score > best) {
+          best = score;
+          try { localStorage.setItem(STORAGE_KEY, String(best)); } catch (_) { /* Keep the record for this session. */ }
+          bestEl.textContent = formatScore(best);
+        }
+        clearInput();
+        score = 0;
+        scoreEl.textContent = formatScore(score);
+        pipes = [];
+        wind.active = false;
+        gate.phase = 'idle';
+        bird = { x: width * .25, y: 278, vx: 0, vy: 0 };
+        speedLabel.textContent = '1.0×';
+        resumeAfterShop = false;
+        shopModal.hidden = true;
+        showState('ready');
+        announcement.textContent = 'Aloitusnäyttö. Voit aloittaa uuden lennon.';
+        document.getElementById('startButton').focus();
       }
       function renderShop() {
         function renderItems(containerId, items, kind) {
@@ -795,6 +825,9 @@
       document.getElementById('startButton').addEventListener('click', startGame);
       document.getElementById('retryButton').addEventListener('click', startGame);
       document.getElementById('resumeButton').addEventListener('click', resumeGame);
+      document.getElementById('homeButton').addEventListener('click', goToMenu);
+      document.getElementById('menuButton').addEventListener('click', goToMenu);
+      document.querySelectorAll('.panel-menu').forEach(button => button.addEventListener('click', goToMenu));
       pauseButton.addEventListener('click', pauseGame);
       soundButton.addEventListener('click', () => {
         soundOn = !soundOn;
