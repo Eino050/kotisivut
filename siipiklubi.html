@@ -1173,20 +1173,25 @@
       function drawHazard(pipe) {
         ctx.save();
         ctx.translate(pipe.x + PIPE_WIDTH / 2, pipe.center);
-        ctx.rotate(animTime * 3);
+        ctx.rotate(animTime * 5);
         ctx.beginPath();
-        for (let i = 0; i < 16; i++) {
-          const angle = i * Math.PI / 8;
+        for (let i = 0; i < 24; i++) {
+          const angle = i * Math.PI / 12;
           const radius = i % 2 ? 13 : 20;
           const x = Math.cos(angle) * radius;
           const y = Math.sin(angle) * radius;
           if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
         }
         ctx.closePath();
-        ctx.fillStyle = '#f38357'; ctx.fill();
-        ctx.strokeStyle = '#a94f3c'; ctx.lineWidth = 3; ctx.stroke();
-        ellipse(0, 0, 8, 8, '#ffcc78', '#a94f3c', 2);
-        ellipse(0, 0, 2.5, 2.5, '#a94f3c');
+        const steel = ctx.createLinearGradient(-18, -18, 18, 18);
+        steel.addColorStop(0, '#eff9ef'); steel.addColorStop(.35, '#778e8b');
+        steel.addColorStop(.6, '#d7e2da'); steel.addColorStop(1, '#536965');
+        ctx.fillStyle = steel; ctx.fill();
+        ctx.strokeStyle = '#263f3c'; ctx.lineWidth = 2.5; ctx.lineJoin = 'miter'; ctx.stroke();
+        ellipse(0, 0, 10, 10, '#a63b31', '#512f2b', 2);
+        ctx.strokeStyle = '#ffb85b'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(-6, -5); ctx.lineTo(5, 6); ctx.moveTo(0, -8); ctx.lineTo(8, 0); ctx.stroke();
+        ellipse(0, 0, 3, 3, '#e1e9d9', '#425853', 1);
         ctx.restore();
       }
       function drawCoin(x, y) {
