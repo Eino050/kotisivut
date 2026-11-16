@@ -1069,8 +1069,11 @@
         announcement.textContent = `Voimakas tuuli puhaltaa ${wind.direction < 0 ? 'vasemmalle' : 'oikealle'}. Voit väistää ylös tai alas.`;
       }
       function easeRecoveryPipe(pipe) {
-        pipe.moving = false;
-        pipe.baseCenter = pipe.center;
+        if (pipe.moving) {
+          // Soften the motion without changing the current opening position.
+          pipe.amplitude = Math.min(pipe.amplitude, 18);
+          pipe.baseCenter = pipe.center - Math.sin(flightTime * 2.1 + pipe.phase) * pipe.amplitude;
+        }
         pipe.hazard = false;
         pipe.gap += 24;
         // Do not move a coin that is already close to or behind the player.
@@ -1184,7 +1187,7 @@
           // After a gust or gate, give the player time and a reachable first opening.
           lastGap = lastPipe ? clamp(lastGap + (Math.random() - .5) * 110, 155, 370) : clamp(bird.y, 155, 370);
           const pipe = makePipe(lastPipe ? lastPipe.x + spacing : width + (wind.active ? 100 : 400), lastGap, nextPipeIndex++);
-          if (!lastPipe) { pipe.moving = false; pipe.hazard = false; }
+          if (!lastPipe) { pipe.amplitude = Math.min(pipe.amplitude, 18); pipe.hazard = false; }
           if (windRecoveryPipes > 0) { easeRecoveryPipe(pipe); windRecoveryPipes--; }
           pipes.push(pipe);
         }
