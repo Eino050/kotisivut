@@ -402,7 +402,7 @@
         <div class="gate-badge" id="gateBadge" hidden>SIIRRY AUKKOON →</div>
         <div class="combo-badge" id="comboBadge" hidden>✦ KOMBO 0</div>
         <div class="coin-receipt" id="coinReceipt" hidden>KOLIKOT +1 ●</div>
-        <div class="stage-stamp" data-i18n="flightMode">✦ LENTOTILA: VAPAA</div><div class="stage-stamp right"><span data-i18n="speed">VAUHTI</span> <span id="speedLabel">1.0×</span> &nbsp; ✦</div>
+        <div class="stage-stamp" data-i18n="flightMode">✦ LENTOTILA: VAPAA</div><div class="stage-stamp right"><span data-i18n="speed">VAUHTI</span> <span id="speedLabel">1.00×</span> &nbsp; ✦</div>
 
         <div class="overlay" id="overlay">
           <div class="panel" id="readyPanel">
@@ -920,7 +920,7 @@
         windRecoveryPipes = 0;
         wind = { active: false, pending: false, warning: false, warningRemaining: 0, remaining: 8, direction: 1, y: 278, elapsed: 0 };
         gate = { phase: 'idle', nextPipeCount: 4, lastDirection: -1, center: 0, gap: 130, y: -30, timer: 0 };
-        speedLabel.textContent = '1.0×';
+        speedLabel.textContent = '1.00×';
         pipes = [makePipe(Math.min(width + 65, bird.x + 560), lastGap, 0)];
         scenery = 0;
         showState('playing');
@@ -959,7 +959,7 @@
         wind.warning = false;
         gate.phase = 'idle';
         bird = { x: width * .25, y: 278, vx: 0, vy: 0 };
-        speedLabel.textContent = '1.0×';
+        speedLabel.textContent = '1.00×';
         resumeAfterShop = false;
         shopModal.hidden = true;
         showState('ready');
@@ -1333,9 +1333,11 @@
           if (coinReceiptRemaining === 0) coinReceipt.hidden = true;
         }
         flightTime += dt;
-        const speed = Math.min(300, 176 + flightTime + pipesPassed * 1.8) * (windRecoveryTime > 0 ? .8 : 1);
+        // The square-root curve keeps increasing without a cap, but slows acceleration as the flight progresses.
+        const progress = flightTime + pipesPassed * 1.8;
+        const speed = (176 + 20 * (Math.sqrt(1 + progress / 20) - 1)) * (windRecoveryTime > 0 ? .8 : 1);
         windRecoveryTime = Math.max(0, windRecoveryTime - dt);
-        const speedText = `${(speed / 176).toFixed(1)}×`;
+        const speedText = `${(speed / 176).toFixed(2)}×`;
         if (speedLabel.textContent !== speedText) speedLabel.textContent = speedText;
         scenery += speed * dt;
         distance += speed * dt / 10;
