@@ -671,6 +671,8 @@
           moving, phase: Math.random() * Math.PI * 2,
           amplitude: Math.min(40, 26 + score * .5),
           hazard, coin: index % 3 === 0 && !moving && !hazard,
+          coinOffset: Math.floor(index / 3) % 2 === 0 ? -40 : 40,
+          skyCoinY: clamp(center + (Math.floor(index / 4) % 2 === 0 ? 65 : -65), 75, GROUND - 75),
           coinCollected: false, skyCoin: index % 4 === 1, skyCoinCollected: false, scored: false
         };
       }
@@ -996,12 +998,12 @@
               (pipe.hazard && Math.hypot(bird.x - (pipe.x + PIPE_WIDTH / 2), bird.y - pipe.center) < BIRD_RADIUS + 17)) {
             endGame(); return;
           }
-          const coinReach = BIRD_RADIUS + 12 + (inventory.upgrades.includes('magnet') ? 8 : 0);
-          if (pipe.coin && !pipe.coinCollected && Math.hypot(bird.x - (pipe.x + PIPE_WIDTH / 2), bird.y - pipe.center) < coinReach) {
+          const coinReach = BIRD_RADIUS + 5 + (inventory.upgrades.includes('magnet') ? 8 : 0);
+          if (pipe.coin && !pipe.coinCollected && Math.hypot(bird.x - (pipe.x + PIPE_WIDTH / 2), bird.y - (pipe.center + pipe.coinOffset)) < coinReach) {
             pipe.coinCollected = true;
             collectCoin();
           }
-          if (pipe.skyCoin && !pipe.skyCoinCollected && Math.hypot(bird.x - (pipe.x - 70), bird.y - pipe.baseCenter) < coinReach) {
+          if (pipe.skyCoin && !pipe.skyCoinCollected && Math.hypot(bird.x - (pipe.x - 70), bird.y - pipe.skyCoinY) < coinReach) {
             pipe.skyCoinCollected = true;
             collectCoin();
           }
@@ -1298,8 +1300,8 @@
         else pipes.forEach(pipe => {
           drawPipe(pipe);
           if (pipe.hazard) drawHazard(pipe);
-          if (pipe.coin && !pipe.coinCollected) drawCoin(pipe.x + PIPE_WIDTH / 2, pipe.center);
-          if (pipe.skyCoin && !pipe.skyCoinCollected) drawCoin(pipe.x - 70, pipe.baseCenter);
+          if (pipe.coin && !pipe.coinCollected) drawCoin(pipe.x + PIPE_WIDTH / 2, pipe.center + pipe.coinOffset);
+          if (pipe.skyCoin && !pipe.skyCoinCollected) drawCoin(pipe.x - 70, pipe.skyCoinY);
         });
         drawBird();
         drawGround();
