@@ -111,13 +111,13 @@
     .score-block { display: flex; align-items: center; gap: 10px; color: var(--ink); }
     .score-icon { display: grid; place-items: center; width: 38px; height: 38px; border: 2px solid #31584c; border-radius: 11px; background: #ffe6a0; box-shadow: 0 3px 0 #31584c; font-size: 19px; }
     .hud-label { display: block; color: #31584c; font-size: 8px; letter-spacing: 1.5px; }
-    .score-number { display: block; font-size: 25px; font-weight: 900; line-height: 1; letter-spacing: -1px; }
+    .score-number { display: block; font-size: clamp(16px, 4vw, 25px); font-weight: 900; line-height: 1; letter-spacing: -1px; white-space: nowrap; }
     .hud-right { display: flex; align-items: flex-start; gap: 16px; }
     .wind-badge, .gate-badge { position: absolute; top: 22px; left: 50%; transform: translateX(-50%); padding: 8px 11px; border: 2px solid #579889; border-radius: 9px; background: #e6f8e9ed; color: #285e58; font-size: 10px; font-weight: 900; letter-spacing: 1px; white-space: nowrap; pointer-events: none; }
     .gate-badge { border-color: #a87b39; background: #fff0c8f2; color: #7e4d28; }
     .wind-badge.warning { border-color: #b77038; background: #fff0c8f2; color: #7e4d28; }
     .best-block { text-align: right; color: var(--ink); }
-    .best-number { display: block; margin-top: 3px; font-size: 19px; font-weight: 900; line-height: 1; }
+    .best-number { display: block; margin-top: 3px; font-size: clamp(14px, 3.5vw, 19px); font-weight: 900; line-height: 1; white-space: nowrap; }
     .pause-button {
       width: 37px; height: 37px; border: 2px solid #31584c; border-radius: 10px;
       background: #fff8df; color: var(--ink); cursor: pointer; pointer-events: auto;
@@ -388,8 +388,8 @@
       <section class="stage" id="stage" aria-label="Siipiklubin pelialue">
         <canvas id="game" role="img" aria-label="Lintu lentää pilvien keskellä ja väistää vihreitä putkia."></canvas>
         <div class="hud">
-          <div class="score-block"><span class="score-icon" aria-hidden="true">✦</span><span><span class="hud-label">PISTEET</span><strong class="score-number" id="score">00</strong></span></div>
-          <div class="hud-right"><div class="best-block"><span class="hud-label">ENNÄTYS</span><strong class="best-number" id="best">00</strong></div><button id="menuButton" class="pause-button menu-button" type="button" aria-label="Palaa aloitusnäyttöön" hidden>MENU</button><button id="pauseButton" class="pause-button" type="button" aria-label="Keskeytä peli" title="Keskeytä peli (P tai Esc)" hidden>Ⅱ</button></div>
+          <div class="score-block"><span class="score-icon" aria-hidden="true">✦</span><span><span class="hud-label">MATKA</span><strong class="score-number" id="distance">0 m</strong></span></div>
+          <div class="hud-right"><div class="best-block"><span class="hud-label">ENNÄTYS</span><strong class="best-number" id="best">0 m</strong></div><button id="menuButton" class="pause-button menu-button" type="button" aria-label="Palaa aloitusnäyttöön" hidden>MENU</button><button id="pauseButton" class="pause-button" type="button" aria-label="Keskeytä peli" title="Keskeytä peli (P tai Esc)" hidden>Ⅱ</button></div>
         </div>
         <div class="wind-badge" id="windBadge" hidden>☁ TUULI ←</div>
         <div class="gate-badge" id="gateBadge" hidden>SIIRRY AUKKOON →</div>
@@ -431,7 +431,7 @@
             <div class="panel-kicker" id="resultKicker">HIENO LENTO</div>
             <h2><span id="resultTitle">Taivas</span><br><em id="resultAccent">odottaa!</em></h2>
             <p id="resultMessage">Jokainen lento vie sinua vähän pidemmälle.</p>
-            <div class="result-row"><div><small>PISTEET</small><strong id="finalScore">00</strong></div><div><small>ENNÄTYS</small><strong id="finalBest">00</strong></div></div>
+            <div class="result-row"><div><small>MATKA</small><strong id="finalDistance">0 m</strong></div><div><small>ENNÄTYS</small><strong id="finalBest">0 m</strong></div></div>
             <button class="primary" id="retryButton" type="button">LENNÄ UUDELLEEN <span>↗</span></button>
             <button class="panel-menu" type="button">MENU</button>
             <small class="panel-hint">tai paina välilyöntiä</small>
@@ -451,7 +451,7 @@
         <div class="how" aria-label="Peliohjeet">
           <div class="how-item"><div class="key-group" aria-hidden="true"><span class="key">←</span><span class="key">↑</span><span class="key">↓</span><span class="key">→</span></div><div class="how-label">LIIKU VAPAASTI<small>Nuolinäppäimet tai WASD</small></div></div>
           <div class="how-divider"></div>
-          <div class="how-item task"><span style="font-size:25px;color:#ffd273" aria-hidden="true">✳</span><div class="how-label">VARO ESTEITÄ JA TUULTA<small>Jokaisesta putkiparista yksi piste</small></div></div>
+          <div class="how-item task"><span style="font-size:25px;color:#ffd273" aria-hidden="true">✳</span><div class="how-label">VARO ESTEITÄ JA TUULTA<small>Kuinka monta metriä lennät?</small></div></div>
           <div class="tip"><span>✦</span> &nbsp; Pysähdy hetkeksi: P tai Esc</div>
         </div>
         <div class="touch-controls" aria-label="Kosketusohjaus">
@@ -495,7 +495,7 @@
       const stage = document.getElementById('stage');
       const overlay = document.getElementById('overlay');
       const panels = { ready: document.getElementById('readyPanel'), paused: document.getElementById('pausePanel'), over: document.getElementById('overPanel') };
-      const scoreEl = document.getElementById('score');
+      const distanceEl = document.getElementById('distance');
       const bestEl = document.getElementById('best');
       const pauseButton = document.getElementById('pauseButton');
       const windBadge = document.getElementById('windBadge');
@@ -516,12 +516,13 @@
       const PIPE_WIDTH = 92;
       const BIRD_RADIUS = 19;
       const LEFT_FLIGHT_LIMIT = BIRD_RADIUS + 5;
-      const STORAGE_KEY = 'siipiklubi-best';
+      const STORAGE_KEY = 'siipiklubi-best-distance-v1';
       const SHOP_STORAGE_KEY = 'siipiklubi-shop-v1';
       const reducedMotionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
       let width = 1100;
       let state = 'ready';
-      let score = 0;
+      let distance = 0;
+      let pipesPassed = 0;
       let coinCombo = 0;
       let coinReceiptRemaining = 0;
       let best = 0;
@@ -540,7 +541,7 @@
       let windRecoveryTime = 0;
       let windRecoveryPipes = 0;
       let wind = { active: false, pending: false, warning: false, warningRemaining: 0, remaining: 8, direction: 1, y: 278, elapsed: 0 };
-      let gate = { phase: 'idle', nextScore: 4, lastDirection: -1, center: 0, gap: 130, y: -30, timer: 0 };
+      let gate = { phase: 'idle', nextPipeCount: 4, lastDirection: -1, center: 0, gap: 130, y: -30, timer: 0 };
       let pipes = [];
       let bird = { x: 250, y: 280, vx: 0, vy: 0 };
       const keyboard = new Set();
@@ -593,7 +594,7 @@
         { kicker: 'JATKA SAMAAN MALLIIN', title: 'Hyvä', accent: 'sinä!', message: 'Pilvien takana odottaa vielä monta hienoa hetkeä.', record: 'Uusi ennätys! Tänään taivas on aivan sinun.' }
       ];
       const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
-      const formatScore = n => String(n).padStart(2, '0');
+      const formatDistance = n => `${Math.floor(n)} m`;
       function loadInventory() {
         const fallback = { coins: 0, owned: ['sun'], equipped: 'sun', upgrades: [], ownedAccessories: [], equippedAccessories: {} };
         try {
@@ -627,7 +628,7 @@
       }
       updateCoins();
       try { best = Math.max(0, Number.parseInt(localStorage.getItem(STORAGE_KEY), 10) || 0); } catch (_) { /* The game also works without storage. */ }
-      bestEl.textContent = formatScore(best);
+      bestEl.textContent = formatDistance(best);
 
       function resize() {
         const rect = stage.getBoundingClientRect();
@@ -727,22 +728,23 @@
         const rareCoin = index % 16 === 13;
         return {
           x, center, baseCenter: center,
-          gap: Math.max(154, 188 - score * 1.3) + (inventory.upgrades.includes('roomy') ? 20 : 0),
+          gap: Math.max(154, 188 - pipesPassed * 1.3) + (inventory.upgrades.includes('roomy') ? 20 : 0),
           moving, phase: Math.random() * Math.PI * 2,
-          amplitude: Math.min(40, 26 + score * .5),
+          amplitude: Math.min(40, 26 + pipesPassed * .5),
           hazard, coin: index % 3 === 0 && !moving && !hazard,
           coinOffset: Math.floor(index / 3) % 2 === 0 ? -40 : 40,
           skyCoinXOffset: rareCoin ? -100 : -70,
           skyCoinY: clamp(center + (rareCoin ? (index % 32 === 13 ? -105 : 105) : (Math.floor(index / 4) % 2 === 0 ? 65 : -65)), 75, GROUND - 75),
-          coinCollected: false, coinMissed: false, skyCoin: index % 4 === 1, skyCoinRare: rareCoin, skyCoinCollected: false, skyCoinMissed: false, scored: false
+          coinCollected: false, coinMissed: false, skyCoin: index % 4 === 1, skyCoinRare: rareCoin, skyCoinCollected: false, skyCoinMissed: false, passed: false
         };
       }
       function startGame() {
         clearInput();
-        score = 0;
+        distance = 0;
+        pipesPassed = 0;
         coinCombo = 0;
         coinReceiptRemaining = 0;
-        scoreEl.textContent = formatScore(score);
+        distanceEl.textContent = formatDistance(distance);
         bird = { x: Math.max(75, width * .24), y: 278, vx: 0, vy: 0 };
         lastGap = 278;
         flightTime = 0;
@@ -750,7 +752,7 @@
         windRecoveryTime = 0;
         windRecoveryPipes = 0;
         wind = { active: false, pending: false, warning: false, warningRemaining: 0, remaining: 8, direction: 1, y: 278, elapsed: 0 };
-        gate = { phase: 'idle', nextScore: 4, lastDirection: -1, center: 0, gap: 130, y: -30, timer: 0 };
+        gate = { phase: 'idle', nextPipeCount: 4, lastDirection: -1, center: 0, gap: 130, y: -30, timer: 0 };
         speedLabel.textContent = '1.0×';
         pipes = [makePipe(Math.min(width + 65, bird.x + 560), lastGap, 0)];
         scenery = 0;
@@ -774,16 +776,17 @@
         tone(520, .1);
       }
       function goToMenu() {
-        if ((state === 'playing' || state === 'paused') && score > best) {
-          best = score;
+        if ((state === 'playing' || state === 'paused') && Math.floor(distance) > best) {
+          best = Math.floor(distance);
           try { localStorage.setItem(STORAGE_KEY, String(best)); } catch (_) { /* Keep the record for this session. */ }
-          bestEl.textContent = formatScore(best);
+          bestEl.textContent = formatDistance(best);
         }
         clearInput();
-        score = 0;
+        distance = 0;
+        pipesPassed = 0;
         coinCombo = 0;
         coinReceiptRemaining = 0;
-        scoreEl.textContent = formatScore(score);
+        distanceEl.textContent = formatDistance(distance);
         pipes = [];
         wind.active = false;
         wind.warning = false;
@@ -887,14 +890,14 @@
         if (!shopModal.hidden) renderShop();
       });
       function endGame() {
-        const newRecord = score > best;
+        const newRecord = Math.floor(distance) > best;
         if (newRecord) {
-          best = score;
+          best = Math.floor(distance);
           try { localStorage.setItem(STORAGE_KEY, String(best)); } catch (_) { /* Best score remains available for this session. */ }
         }
-        bestEl.textContent = formatScore(best);
-        document.getElementById('finalScore').textContent = formatScore(score);
-        document.getElementById('finalBest').textContent = formatScore(best);
+        bestEl.textContent = formatDistance(best);
+        document.getElementById('finalDistance').textContent = formatDistance(distance);
+        document.getElementById('finalBest').textContent = formatDistance(best);
         const result = resultCards[resultIndex++ % resultCards.length];
         document.getElementById('resultKicker').textContent = newRecord ? 'UUSI ENNÄTYS!' : result.kicker;
         document.getElementById('resultTitle').textContent = result.title;
@@ -902,7 +905,7 @@
         document.getElementById('resultMessage').textContent = newRecord ? result.record : result.message;
         clearInput();
         showState('over');
-        announcement.textContent = `Hieno lento! Pisteet ${score}, ennätys ${best}. ${newRecord ? result.record : result.message}`;
+        announcement.textContent = `Hieno lento! Matka ${Math.floor(distance)} metriä, ennätys ${best} metriä. ${newRecord ? result.record : result.message}`;
         tone(300, .18, 'triangle', .06);
         tone(210, .25, 'triangle', .05, .12);
       }
@@ -1110,11 +1113,14 @@
           if (coinReceiptRemaining === 0) coinReceipt.hidden = true;
         }
         flightTime += dt;
-        const speed = Math.min(300, 176 + flightTime + score * 1.8) * (windRecoveryTime > 0 ? .8 : 1);
+        const speed = Math.min(300, 176 + flightTime + pipesPassed * 1.8) * (windRecoveryTime > 0 ? .8 : 1);
         windRecoveryTime = Math.max(0, windRecoveryTime - dt);
         const speedText = `${(speed / 176).toFixed(1)}×`;
         if (speedLabel.textContent !== speedText) speedLabel.textContent = speedText;
         scenery += speed * dt;
+        distance += speed * dt / 10;
+        const distanceText = formatDistance(distance);
+        if (distanceEl.textContent !== distanceText) distanceEl.textContent = distanceText;
         if (gate.phase === 'idle' && wind.warning) {
           wind.warningRemaining -= dt;
           if (wind.warningRemaining <= 0) startWind();
@@ -1156,17 +1162,16 @@
           const coinReach = BIRD_RADIUS + 14 + (inventory.upgrades.includes('magnet') ? 8 : 0);
           if (pipe.skyCoin) checkCoin(pipe, 'sky', pipe.x + pipe.skyCoinXOffset, pipe.skyCoinY, coinReach, pipe.skyCoinRare);
           if (pipe.coin) checkCoin(pipe, 'pipe', pipe.x + PIPE_WIDTH / 2, pipe.center + pipe.coinOffset, coinReach);
-          if (!pipe.scored && pipe.x + PIPE_WIDTH < bird.x - BIRD_RADIUS) {
-            pipe.scored = true;
-            score++;
-            scoreEl.textContent = formatScore(score);
-            announcement.textContent = `Pisteet ${score}.`;
+          if (!pipe.passed && pipe.x + PIPE_WIDTH < bird.x - BIRD_RADIUS) {
+            pipe.passed = true;
+            pipesPassed++;
+            announcement.textContent = `${pipesPassed}. este ohitettu, matka ${Math.floor(distance)} metriä.`;
             tone(640, .1, 'sine', .035);
             tone(850, .15, 'sine', .035, .08);
           }
         }
         pipes = pipes.filter(pipe => pipe.x + PIPE_WIDTH > -15);
-        if (gate.phase === 'idle' && score >= gate.nextScore) {
+        if (gate.phase === 'idle' && pipesPassed >= gate.nextPipeCount) {
           gate.phase = 'draining';
           wind.pending = false;
           if (wind.active) { beginWindRecovery(); wind.remaining = 10 + Math.random() * 4; }
@@ -1179,7 +1184,7 @@
           gate.timer -= dt;
           if (gate.timer <= 0) gate.phase = 'sweep';
         } else if (gate.phase === 'sweep') {
-          gate.y += (285 + Math.min(35, score * 1.3)) * dt;
+          gate.y += (285 + Math.min(35, pipesPassed * 1.3)) * dt;
           const left = gate.center - gate.gap / 2;
           const right = gate.center + gate.gap / 2;
           if (circleRect(bird.x, bird.y, BIRD_RADIUS, 0, gate.y, left, 26) ||
@@ -1188,7 +1193,7 @@
           }
           if (gate.y > GROUND + 26) {
             gate.phase = 'idle';
-            gate.nextScore = score + 5;
+            gate.nextPipeCount = pipesPassed + 5;
             gateBadge.hidden = true;
             announcement.textContent = 'Hienosti väistetty! Lento jatkuu.';
             tone(700, .12, 'sine', .04);
