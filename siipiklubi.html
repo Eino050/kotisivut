@@ -1139,7 +1139,7 @@
               (pipe.hazard && Math.hypot(bird.x - (pipe.x + PIPE_WIDTH / 2), bird.y - pipe.center) < BIRD_RADIUS + 17)) {
             endGame(); return;
           }
-          const coinReach = BIRD_RADIUS + 5 + (inventory.upgrades.includes('magnet') ? 8 : 0);
+          const coinReach = BIRD_RADIUS + 14 + (inventory.upgrades.includes('magnet') ? 8 : 0);
           if (pipe.skyCoin) checkCoin(pipe, 'sky', pipe.x + pipe.skyCoinXOffset, pipe.skyCoinY, coinReach, pipe.skyCoinRare);
           if (pipe.coin) checkCoin(pipe, 'pipe', pipe.x + PIPE_WIDTH / 2, pipe.center + pipe.coinOffset, coinReach);
           if (!pipe.scored && pipe.x + PIPE_WIDTH < bird.x - BIRD_RADIUS) {
