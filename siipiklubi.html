@@ -732,7 +732,7 @@
           moving, phase: Math.random() * Math.PI * 2,
           amplitude: Math.min(40, 26 + pipesPassed * .5),
           hazard, coin: index % 3 === 0 && !moving && !hazard,
-          coinOffset: Math.floor(index / 3) % 2 === 0 ? -40 : 40,
+          coinY: center + (Math.floor(index / 3) % 2 === 0 ? -40 : 40),
           skyCoinXOffset: rareCoin ? -100 : -70,
           skyCoinY: clamp(center + (rareCoin ? (index % 32 === 13 ? -105 : 105) : (Math.floor(index / 4) % 2 === 0 ? 65 : -65)), 75, GROUND - 75),
           coinCollected: false, coinMissed: false, skyCoin: index % 4 === 1, skyCoinRare: rareCoin, skyCoinCollected: false, skyCoinMissed: false, passed: false
@@ -1081,7 +1081,7 @@
         windBadge.hidden = false;
         announcement.textContent = `Voimakas tuuli puhaltaa ${wind.direction < 0 ? 'vasemmalle' : 'oikealle'}. Voit väistää ylös tai alas.`;
       }
-      function easeRecoveryPipe(pipe) {
+      function easeRecoveryPipe(pipe, newPipe = false) {
         if (pipe.moving) {
           // Soften the motion without changing the current opening position.
           pipe.amplitude = Math.min(pipe.amplitude, 18);
@@ -1089,9 +1089,8 @@
         }
         pipe.hazard = false;
         pipe.gap += 24;
-        // Do not move a coin that is already close to or behind the player.
-        if (!pipe.coinCollected && !pipe.coinMissed && pipe.x + PIPE_WIDTH / 2 > bird.x + 60) pipe.coinOffset = 0;
-        if (!pipe.skyCoinCollected && !pipe.skyCoinMissed && pipe.x + pipe.skyCoinXOffset > bird.x + 60) pipe.skyCoinY = pipe.center;
+        // Choose easier positions only before the new pipe is displayed.
+        if (newPipe) { pipe.coinY = pipe.center; pipe.skyCoinY = pipe.center; }
       }
       function beginWindRecovery() {
         windRecoveryTime = 2.5;
@@ -1161,7 +1160,7 @@
           }
           const coinReach = BIRD_RADIUS + 14 + (inventory.upgrades.includes('magnet') ? 8 : 0);
           if (pipe.skyCoin) checkCoin(pipe, 'sky', pipe.x + pipe.skyCoinXOffset, pipe.skyCoinY, coinReach, pipe.skyCoinRare);
-          if (pipe.coin) checkCoin(pipe, 'pipe', pipe.x + PIPE_WIDTH / 2, pipe.center + pipe.coinOffset, coinReach);
+          if (pipe.coin) checkCoin(pipe, 'pipe', pipe.x + PIPE_WIDTH / 2, pipe.coinY, coinReach);
           if (!pipe.passed && pipe.x + PIPE_WIDTH < bird.x - BIRD_RADIUS) {
             pipe.passed = true;
             pipesPassed++;
@@ -1207,7 +1206,7 @@
           lastGap = lastPipe ? clamp(lastGap + (Math.random() - .5) * 110, 155, 370) : clamp(bird.y, 155, 370);
           const pipe = makePipe(lastPipe ? lastPipe.x + spacing : width + (wind.active ? 100 : 400), lastGap, nextPipeIndex++);
           if (!lastPipe) { pipe.amplitude = Math.min(pipe.amplitude, 18); pipe.hazard = false; }
-          if (windRecoveryPipes > 0) { easeRecoveryPipe(pipe); windRecoveryPipes--; }
+          if (windRecoveryPipes > 0) { easeRecoveryPipe(pipe, true); windRecoveryPipes--; }
           pipes.push(pipe);
         }
       }
@@ -1397,15 +1396,14 @@
         ctx.restore();
       }
       function drawCoin(x, y, rare = false) {
-        const shimmer = .85 + .15 * Math.cos(animTime * 4);
         if (rare) {
-          ellipse(x, y, 17 * shimmer, 19, '#a15cdd', '#623397', 2.5);
-          ellipse(x, y, 12 * shimmer, 14, '#d7a0f4', '#8651b7', 1.5);
+          ellipse(x, y, 17, 19, '#a15cdd', '#623397', 2.5);
+          ellipse(x, y, 12, 14, '#d7a0f4', '#8651b7', 1.5);
           ctx.save(); ctx.fillStyle = '#4f287e'; ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
           ctx.fillText('+3', x, y + 1); ctx.restore();
         } else {
-          ellipse(x, y, 12 * shimmer, 14, '#ffd05a', '#b5782b', 2.5);
-          ellipse(x, y, 7 * shimmer, 9, '#ffeb9e', '#d9a33e', 1.5);
+          ellipse(x, y, 12, 14, '#ffd05a', '#b5782b', 2.5);
+          ellipse(x, y, 7, 9, '#ffeb9e', '#d9a33e', 1.5);
           ctx.strokeStyle = '#d18e2e'; ctx.lineWidth = 2;
           ctx.beginPath(); ctx.moveTo(x, y - 5); ctx.lineTo(x, y + 5); ctx.stroke();
         }
@@ -1521,7 +1519,7 @@
         else pipes.forEach(pipe => {
           drawPipe(pipe);
           if (pipe.hazard) drawHazard(pipe);
-          if (pipe.coin && !pipe.coinCollected) drawCoin(pipe.x + PIPE_WIDTH / 2, pipe.center + pipe.coinOffset);
+          if (pipe.coin && !pipe.coinCollected) drawCoin(pipe.x + PIPE_WIDTH / 2, pipe.coinY);
           if (pipe.skyCoin && !pipe.skyCoinCollected) drawCoin(pipe.x + pipe.skyCoinXOffset, pipe.skyCoinY, pipe.skyCoinRare);
         });
         drawBird();
