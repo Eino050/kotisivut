@@ -129,6 +129,7 @@
     .stage-stamp { position: absolute; bottom: 18px; left: 22px; color: #42664b; font-size: 8px; letter-spacing: 1.4px; pointer-events: none; }
     .stage-stamp.right { right: 22px; left: auto; }
     .combo-badge { position: absolute; bottom: 40px; left: 14px; padding: 6px 9px; border: 1px solid #b78430; border-radius: 8px; background: #fff1bdeF; color: #71501f; font-size: 10px; font-weight: 900; letter-spacing: .4px; pointer-events: none; }
+    .coin-receipt { position: absolute; bottom: 74px; left: 14px; padding: 7px 10px; border: 2px solid #b78430; border-radius: 8px; background: #fff5cc; color: #71501f; font-size: 12px; font-weight: 900; letter-spacing: .4px; pointer-events: none; }
     .overlay { position: absolute; inset: 0; display: grid; place-items: center; padding: 16px; background: #214a3c1c; }
     .panel {
       position: relative;
@@ -393,6 +394,7 @@
         <div class="wind-badge" id="windBadge" hidden>☁ TUULI ←</div>
         <div class="gate-badge" id="gateBadge" hidden>SIIRRY AUKKOON →</div>
         <div class="combo-badge" id="comboBadge" hidden>✦ KOMBO 0</div>
+        <div class="coin-receipt" id="coinReceipt" hidden>KOLIKOT +1 ●</div>
         <div class="stage-stamp">✦ &nbsp; LENTOTILA: VAPAA</div><div class="stage-stamp right">VAUHTI <span id="speedLabel">1.0×</span> &nbsp; ✦</div>
 
         <div class="overlay" id="overlay">
@@ -499,6 +501,7 @@
       const windBadge = document.getElementById('windBadge');
       const gateBadge = document.getElementById('gateBadge');
       const comboBadge = document.getElementById('comboBadge');
+      const coinReceipt = document.getElementById('coinReceipt');
       const speedLabel = document.getElementById('speedLabel');
       const soundButton = document.getElementById('soundButton');
       const soundText = document.getElementById('soundText');
@@ -520,6 +523,7 @@
       let state = 'ready';
       let score = 0;
       let coinCombo = 0;
+      let coinReceiptRemaining = 0;
       let best = 0;
       let soundOn = true;
       let masterVolume = .4;
@@ -714,6 +718,7 @@
         windBadge.hidden = next !== 'playing' || (!wind.active && !wind.warning);
         gateBadge.hidden = next !== 'playing' || (gate.phase !== 'warning' && gate.phase !== 'sweep');
         comboBadge.hidden = next !== 'playing' || coinCombo === 0;
+        coinReceipt.hidden = next !== 'playing' || coinReceiptRemaining <= 0;
         if (next === 'playing') playMusic(); else musicPlayer.pause();
       }
       function makePipe(x, center, index) {
@@ -736,6 +741,7 @@
         clearInput();
         score = 0;
         coinCombo = 0;
+        coinReceiptRemaining = 0;
         scoreEl.textContent = formatScore(score);
         bird = { x: Math.max(75, width * .24), y: 278, vx: 0, vy: 0 };
         lastGap = 278;
@@ -776,6 +782,7 @@
         clearInput();
         score = 0;
         coinCombo = 0;
+        coinReceiptRemaining = 0;
         scoreEl.textContent = formatScore(score);
         pipes = [];
         wind.active = false;
@@ -996,6 +1003,9 @@
         inventory.coins += amount;
         saveInventory();
         updateCoins();
+        coinReceipt.textContent = `KOLIKOT +${amount} ●`;
+        coinReceiptRemaining = 1.6;
+        coinReceipt.hidden = false;
         comboBadge.textContent = `✦ KOMBO ${coinCombo}${bonus ? ` · +${bonus} BONUS` : ''}`;
         comboBadge.hidden = false;
         announcement.textContent = `${rare ? 'Violetti kolikko' : 'Kolikko'} kerätty: +${amount}. Kombo ${coinCombo}. Kolikoita ${inventory.coins}.`;
@@ -1095,6 +1105,10 @@
         animTime += dt;
         if (state === 'ready') scenery += dt * 14;
         if (state !== 'playing') return;
+        if (coinReceiptRemaining > 0) {
+          coinReceiptRemaining = Math.max(0, coinReceiptRemaining - dt);
+          if (coinReceiptRemaining === 0) coinReceipt.hidden = true;
+        }
         flightTime += dt;
         const speed = Math.min(300, 176 + flightTime + score * 1.8) * (windRecoveryTime > 0 ? .8 : 1);
         windRecoveryTime = Math.max(0, windRecoveryTime - dt);
