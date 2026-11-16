@@ -531,6 +531,8 @@
       let lastGap = 275;
       let flightTime = 0;
       let nextPipeIndex = 0;
+      let windRecoveryTime = 0;
+      let windRecoveryPipes = 0;
       let wind = { active: false, pending: false, remaining: 3, direction: -1, y: 278, elapsed: 0 };
       let gate = { phase: 'idle', nextScore: 4, lastDirection: -1, center: 0, gap: 130, y: -30, timer: 0 };
       let pipes = [];
@@ -735,6 +737,8 @@
         lastGap = 278;
         flightTime = 0;
         nextPipeIndex = 1;
+        windRecoveryTime = 0;
+        windRecoveryPipes = 0;
         wind = { active: false, pending: false, remaining: 3, direction: -1, y: 278, elapsed: 0 };
         gate = { phase: 'idle', nextScore: 4, lastDirection: -1, center: 0, gap: 130, y: -30, timer: 0 };
         speedLabel.textContent = '1.0×';
@@ -1019,7 +1023,7 @@
         gate.center = clamp(bird.x + direction * Math.min(190, room(direction)), minCenter, maxCenter);
         gate.lastDirection = direction;
         gate.phase = 'warning';
-        gate.timer = 3.2 + (inventory.upgrades.includes('lookout') ? .5 : 0);
+        gate.timer = 3.2 + (inventory.upgrades.includes('lookout') ? .5 : 0) + (windRecoveryTime > 0 ? .6 : 0);
         gate.y = -30;
         wind.active = false;
         wind.pending = false;
@@ -1032,6 +1036,8 @@
         tone(560, .16, 'triangle', .04, .12);
       }
       function startWind() {
+        windRecoveryTime = 0;
+        windRecoveryPipes = 0;
         wind.pending = false;
         wind.active = true;
         // Push towards the passing obstacles, never pinning the bird against them.
@@ -1043,12 +1049,33 @@
         windBadge.hidden = false;
         announcement.textContent = `Voimakas tuuli puhaltaa ${wind.direction < 0 ? 'vasemmalle' : 'oikealle'}. Voit väistää ylös tai alas.`;
       }
+      function easeRecoveryPipe(pipe) {
+        pipe.moving = false;
+        pipe.baseCenter = pipe.center;
+        pipe.hazard = false;
+        pipe.gap += 24;
+        // Do not move a coin that is already close to or behind the player.
+        if (!pipe.coinCollected && !pipe.coinMissed && pipe.x + PIPE_WIDTH / 2 > bird.x + 60) pipe.coinOffset = 0;
+        if (!pipe.skyCoinCollected && !pipe.skyCoinMissed && pipe.x + pipe.skyCoinXOffset > bird.x + 60) pipe.skyCoinY = pipe.center;
+      }
+      function beginWindRecovery() {
+        windRecoveryTime = 2.5;
+        windRecoveryPipes = 2;
+        for (const pipe of pipes) {
+          if (!windRecoveryPipes) break;
+          if (pipe.x + PIPE_WIDTH < bird.x - BIRD_RADIUS) continue;
+          easeRecoveryPipe(pipe);
+          windRecoveryPipes--;
+        }
+        announcement.textContent = 'Tuuli laantui. Hetki aikaa palautua!';
+      }
       function update(dt) {
         animTime += dt;
         if (state === 'ready') scenery += dt * 14;
         if (state !== 'playing') return;
         flightTime += dt;
-        const speed = Math.min(300, 176 + flightTime + score * 1.8);
+        const speed = Math.min(300, 176 + flightTime + score * 1.8) * (windRecoveryTime > 0 ? .8 : 1);
+        windRecoveryTime = Math.max(0, windRecoveryTime - dt);
         const speedText = `${(speed / 176).toFixed(1)}×`;
         if (speedLabel.textContent !== speedText) speedLabel.textContent = speedText;
         scenery += speed * dt;
@@ -1056,6 +1083,7 @@
           wind.remaining -= dt;
           if (wind.remaining <= 0 && wind.active) {
             wind.active = false;
+            beginWindRecovery();
             wind.remaining = 5 + Math.random() * 2;
             windBadge.hidden = true;
           } else if (wind.remaining <= 0) {
@@ -1102,6 +1130,7 @@
         if (gate.phase === 'idle' && score >= gate.nextScore) {
           gate.phase = 'draining';
           wind.pending = false;
+          if (wind.active) beginWindRecovery();
           wind.active = false;
           windBadge.hidden = true;
         }
@@ -1128,12 +1157,13 @@
         }
         if (gate.phase === 'idle' && wind.pending && pipes.length === 0) startWind();
         const lastPipe = pipes[pipes.length - 1];
-        const spacing = 280;
+        const spacing = windRecoveryPipes > 0 ? 340 : 280;
         if (gate.phase === 'idle' && !wind.pending && (!lastPipe || lastPipe.x < width + 85 - spacing)) {
           // After a gust or gate, give the player time and a reachable first opening.
           lastGap = lastPipe ? clamp(lastGap + (Math.random() - .5) * 110, 155, 370) : clamp(bird.y, 155, 370);
           const pipe = makePipe(lastPipe ? lastPipe.x + spacing : width + (wind.active ? 100 : 400), lastGap, nextPipeIndex++);
           if (!lastPipe) { pipe.moving = false; pipe.hazard = false; }
+          if (windRecoveryPipes > 0) { easeRecoveryPipe(pipe); windRecoveryPipes--; }
           pipes.push(pipe);
         }
       }
