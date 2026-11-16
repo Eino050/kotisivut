@@ -510,6 +510,7 @@
       const BIRD_RADIUS = 19;
       const STORAGE_KEY = 'siipiklubi-best';
       const SHOP_STORAGE_KEY = 'siipiklubi-shop-v1';
+      const reducedMotionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
       let width = 1100;
       let state = 'ready';
       let score = 0;
@@ -543,6 +544,9 @@
         { id: 'lavender', name: 'Laventeli', price: 12, description: 'Pehmeä liila väri.', body: '#c9a7e7', belly: '#f4e5ff', wing: '#a57acb', tail: '#9365b9' },
         { id: 'snow', name: 'Lumipilvi', price: 18, description: 'Huurteisen valkoinen lentäjä.', body: '#edf7f2', belly: '#ffffff', wing: '#bfddd8', tail: '#a7ccc5' },
         { id: 'emerald', name: 'Smaragdilintu', price: 55, description: 'Harvinainen smaragdinvihreä väri.', body: '#4cad83', belly: '#bcefc8', wing: '#328e6c', tail: '#29775c' },
+        { id: 'sparklepearl', name: 'Helmihohde', price: 18, description: 'Helmenvaalea asu, jonka pinta kimaltelee.', body: '#d9e8ed', belly: '#f8ffff', wing: '#aecbd3', tail: '#94b6c3', shimmer: true },
+        { id: 'sparklerose', name: 'Ruusukimallus', price: 45, description: 'Kiiltelevä ruusukullan sävyinen asu.', body: '#eca0a5', belly: '#ffe6dc', wing: '#d47788', tail: '#bd6078', shimmer: true },
+        { id: 'sparklestars', name: 'Tähtisäihke', price: 180, description: 'Todella harvinainen yönsininen, säihkyvä asu.', body: '#6269a9', belly: '#d5dcff', wing: '#494f8c', tail: '#3d4379', shimmer: true },
         { id: 'gold', name: 'Kultakruunu', price: 80, description: 'Harvinainen asu kultaisella kruunulla.', body: '#f7d558', belly: '#fff0ac', wing: '#e9a83c', tail: '#d99030', accessory: 'crown' },
         { id: 'rainbow', name: 'Sateenkaaritähti', price: 150, description: 'Todella harvinainen sateenkaariasu.', body: '#e5b0f2', belly: '#fff0ff', wing: '#b389d9', tail: '#e98eb0', accessory: 'rainbow' }
       ];
@@ -781,7 +785,7 @@
             const head = document.createElement('div'); head.className = 'item-head';
             const swatch = document.createElement('span'); swatch.className = 'item-swatch';
             swatch.setAttribute('aria-hidden', 'true');
-            swatch.style.background = item.accessory === 'rainbow' ? 'linear-gradient(135deg, #f7aebc, #ffdd81, #a0e5cf, #bda6ef)' : (item.body || '#dcebc9');
+            swatch.style.background = item.accessory === 'rainbow' ? 'linear-gradient(135deg, #f7aebc, #ffdd81, #a0e5cf, #bda6ef)' : item.shimmer ? `linear-gradient(135deg, ${item.body} 25%, #fff 50%, ${item.wing} 85%)` : (item.body || '#dcebc9');
             swatch.textContent = kind === 'skin' ? (item.accessory === 'crown' ? '♛' : '✦') : item.icon;
             const name = document.createElement('div'); name.className = 'item-name'; name.textContent = item.name;
             const description = document.createElement('p'); description.className = 'item-description'; description.textContent = item.description;
@@ -1332,6 +1336,25 @@
         ctx.save(); ctx.translate(-9, 5); ctx.rotate(-.35 + flap * .35);
         ellipse(-4, 0, 15, 10, skin.wing, '#a97539', 2);
         ctx.strokeStyle = '#d8903a'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(-12, -1); ctx.quadraticCurveTo(-5, 4, 2, 2); ctx.stroke(); ctx.restore();
+        if (skin.shimmer) {
+          const reducedMotion = reducedMotionPreference.matches;
+          const phase = reducedMotion ? 1 : animTime;
+          const shineX = reducedMotion ? 0 : ((phase * 30) % 100) - 50;
+          ctx.save();
+          ctx.beginPath(); ctx.ellipse(0, 0, 25, 21, 0, 0, Math.PI * 2); ctx.clip();
+          const shine = ctx.createLinearGradient(shineX - 14, 0, shineX + 14, 0);
+          shine.addColorStop(0, 'rgba(255,255,255,0)'); shine.addColorStop(.5, 'rgba(255,255,255,.48)'); shine.addColorStop(1, 'rgba(255,255,255,0)');
+          ctx.fillStyle = shine; ctx.fillRect(-27, -23, 54, 46);
+          for (const [i, point] of [[0, [-14, -10]], [1, [1, -16]], [2, [-13, 8]]]) {
+            const size = 1.5 + (reducedMotion ? .8 : (1 + Math.sin(phase * 4 + i * 2)) * .9);
+            const [x, y] = point;
+            ctx.fillStyle = '#fffdf1'; ctx.beginPath();
+            ctx.moveTo(x, y - size * 1.8); ctx.lineTo(x + size * .35, y - size * .35); ctx.lineTo(x + size, y);
+            ctx.lineTo(x + size * .35, y + size * .35); ctx.lineTo(x, y + size * 1.8); ctx.lineTo(x - size * .35, y + size * .35);
+            ctx.lineTo(x - size, y); ctx.lineTo(x - size * .35, y - size * .35); ctx.closePath(); ctx.fill();
+          }
+          ctx.restore();
+        }
         if (inventory.equippedAccessories.neck === 'scarf') {
           ctx.fillStyle = '#d85643'; ctx.strokeStyle = '#933d35'; ctx.lineWidth = 1.5;
           ctx.beginPath(); ctx.moveTo(-10, 14); ctx.lineTo(-29, 10 + Math.sin(animTime * 6) * 2); ctx.lineTo(-25, 17); ctx.lineTo(-29, 22); ctx.lineTo(-7, 19); ctx.closePath(); ctx.fill(); ctx.stroke();
