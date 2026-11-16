@@ -68,6 +68,8 @@
     .shop-button:hover { background: #ffebac; }
     .coin-mark { color: #c88624; font-size: 16px; line-height: 1; }
     .shop-button strong { font-size: 13px; letter-spacing: 0; }
+    .language-select { width: 55px; min-height: 39px; padding: 4px 3px; border: 1px solid #66847a; border-radius: 9px; background: #29443d; color: #e9f3df; font: inherit; font-size: 10px; font-weight: 900; cursor: pointer; }
+    .language-select:focus-visible { outline: 3px solid #fff6b7; outline-offset: 3px; }
     .sound-button {
       display: flex;
       align-items: center;
@@ -167,6 +169,7 @@
     .primary:hover { background: #ff9d67; transform: translateY(-1px); }
     .primary:active { transform: translateY(3px); box-shadow: 0 1px 0 #ac5939; }
     .primary span { font-size: 18px; line-height: .8; }
+    .primary span[data-i18n] { font-size: 12px; line-height: 1.2; }
     .panel-hint { display: block; margin-top: 11px; color: #8b9c8a; font-size: 10px; font-weight: 800; }
     .result-row { display: flex; margin: 16px 0 18px; padding: 13px 0; border-top: 1px dashed #c5d3bb; border-bottom: 1px dashed #c5d3bb; }
     .result-row > div { flex: 1; }
@@ -229,6 +232,7 @@
     @media (max-width: 430px) {
       .sound-button { padding: 9px; }
       .sound-button span { display: none; }
+      .shop-label { display: none; }
     }
     @media (max-width: 1050px), (max-height: 800px) {
       .how { justify-content: flex-start; }
@@ -367,11 +371,14 @@
         <span class="brand-mark" aria-hidden="true">
           <svg viewBox="0 0 32 32" fill="none"><path d="M4 17c8.5.3 11-7.8 23-8-3.9 2.7-5 5.6-5.9 8.8-4.2 3.2-10 3.3-17.1-.8Z" fill="#315d4c"/><path d="M9 16.9c4.7-.2 8.3-1.8 12.9-4.4" stroke="#D4EDBA" stroke-width="1.5" stroke-linecap="round"/></svg>
         </span>
-        <span><span class="brand-name">siipiklubi<b>.</b></span><span class="brand-sub">PIENI LENTOKERHO</span></span>
+        <span><span class="brand-name">siipiklubi<b>.</b></span><span class="brand-sub" data-i18n="brandSub">PIENI LENTOKERHO</span></span>
       </button>
       <div class="top-actions">
-        <span class="edition">✦ &nbsp; PELAA ILMAISEKSI</span>
-        <button class="shop-button" id="openShop" type="button" aria-label="Avaa kauppa, kolikoita 0">KAUPPA <span class="coin-mark" aria-hidden="true">●</span><strong id="coinTotal">0</strong></button>
+        <span class="edition" data-i18n="free">✦ PELAA ILMAISEKSI</span>
+        <select class="language-select" id="languageSelect" aria-label="Kieli" title="Kieli">
+          <option value="auto">🌐 AUTO</option><option value="fi">Suomi</option><option value="en">English</option><option value="uk">Українська</option><option value="ru">Русский</option><option value="sv">Svenska</option><option value="no">Norsk</option><option value="es">Español</option><option value="it">Italiano</option>
+        </select>
+        <button class="shop-button" id="openShop" type="button" aria-label="Avaa kauppa, kolikoita 0"><span class="shop-label" data-i18n="shop">KAUPPA</span><span class="coin-mark" aria-hidden="true">●</span><strong id="coinTotal">0</strong></button>
         <button class="sound-button" id="soundButton" type="button" aria-pressed="true" aria-label="Mykistä äänet">
           <svg id="soundIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15 9a4 4 0 0 1 0 6M18 6a8 8 0 0 1 0 12"/></svg>
           <span id="soundText">ÄÄNET PÄÄLLÄ</span>
@@ -381,21 +388,21 @@
 
     <main>
       <div class="intro">
-        <div><p class="eyebrow"><span>✦</span> PIENI PELI SUURILLE LENNOILLE</p><h1>Taivas on sinun.</h1></div>
-        <p class="intro-note">YKSI LINTU. LOPUTTOMASTI TAIVASTA.<br>KUINKA PITKÄLLE SINÄ PÄÄSET?</p>
+        <div><p class="eyebrow"><span>✦</span> <span data-i18n="tagline">PIENI PELI SUURILLE LENNOILLE</span></p><h1 data-i18n="headline">Taivas on sinun.</h1></div>
+        <p class="intro-note" data-i18n="introNote">YKSI LINTU. LOPUTTOMASTI TAIVASTA. KUINKA PITKÄLLE SINÄ PÄÄSET?</p>
       </div>
 
       <section class="stage" id="stage" aria-label="Siipiklubin pelialue">
         <canvas id="game" role="img" aria-label="Lintu lentää pilvien keskellä ja väistää vihreitä putkia."></canvas>
         <div class="hud">
-          <div class="score-block"><span class="score-icon" aria-hidden="true">✦</span><span><span class="hud-label">MATKA</span><strong class="score-number" id="distance">0 m</strong></span></div>
-          <div class="hud-right"><div class="best-block"><span class="hud-label">ENNÄTYS</span><strong class="best-number" id="best">0 m</strong></div><button id="menuButton" class="pause-button menu-button" type="button" aria-label="Palaa aloitusnäyttöön" hidden>MENU</button><button id="pauseButton" class="pause-button" type="button" aria-label="Keskeytä peli" title="Keskeytä peli (P tai Esc)" hidden>Ⅱ</button></div>
+          <div class="score-block"><span class="score-icon" aria-hidden="true">✦</span><span><span class="hud-label" data-i18n="distance">MATKA</span><strong class="score-number" id="distance">0 m</strong></span></div>
+          <div class="hud-right"><div class="best-block"><span class="hud-label" data-i18n="record">ENNÄTYS</span><strong class="best-number" id="best">0 m</strong></div><button id="menuButton" class="pause-button menu-button" type="button" aria-label="Palaa aloitusnäyttöön" data-i18n="menu" hidden>MENU</button><button id="pauseButton" class="pause-button" type="button" aria-label="Keskeytä peli" title="Keskeytä peli (P tai Esc)" hidden>Ⅱ</button></div>
         </div>
         <div class="wind-badge" id="windBadge" hidden>☁ TUULI ←</div>
         <div class="gate-badge" id="gateBadge" hidden>SIIRRY AUKKOON →</div>
         <div class="combo-badge" id="comboBadge" hidden>✦ KOMBO 0</div>
         <div class="coin-receipt" id="coinReceipt" hidden>KOLIKOT +1 ●</div>
-        <div class="stage-stamp">✦ &nbsp; LENTOTILA: VAPAA</div><div class="stage-stamp right">VAUHTI <span id="speedLabel">1.0×</span> &nbsp; ✦</div>
+        <div class="stage-stamp" data-i18n="flightMode">✦ LENTOTILA: VAPAA</div><div class="stage-stamp right"><span data-i18n="speed">VAUHTI</span> <span id="speedLabel">1.0×</span> &nbsp; ✦</div>
 
         <div class="overlay" id="overlay">
           <div class="panel" id="readyPanel">
@@ -409,32 +416,32 @@
               <ellipse cx="53" cy="30" rx="2.8" ry="4" fill="#30473a"/>
               <path d="m59 36 14 5-13 5Z" fill="#f47a4b" stroke="#a95537" stroke-width="2" stroke-linejoin="round"/>
             </svg>
-            <div class="panel-kicker">TERVETULOA KYYTIIN</div>
-            <h2>Siivet auki.<br><em>Menoksi!</em></h2>
-            <p>Kerää kolikot, väistä esteet ja siirry sivulle portin kohdalla!</p>
+            <div class="panel-kicker" data-i18n="welcome">TERVETULOA KYYTIIN</div>
+            <h2><span data-i18n="readyTitle">Siivet auki.</span><br><em data-i18n="readyAccent">Menoksi!</em></h2>
+            <p data-i18n="readyInfo">Kerää kolikot, väistä esteet ja siirry sivulle portin kohdalla!</p>
             <div class="instruction">
               <div class="instruction-keys" aria-hidden="true"><span class="up">↑</span><span class="left">←</span><span class="down">↓</span><span class="right">→</span></div>
-              <div class="instruction-text">Ohjaa kaikkiin suuntiin<small>Nuolet, WASD tai kosketusohjain</small></div>
+              <div class="instruction-text"><span data-i18n="controls">Ohjaa kaikkiin suuntiin</span><small data-i18n="controlsDetail">Nuolet, WASD tai kosketusohjain</small></div>
             </div>
-            <button class="primary" id="startButton" type="button">ALOITA LENTO <span>↗</span></button>
-            <small class="panel-hint">tai paina välilyöntiä</small>
+            <button class="primary" id="startButton" type="button"><span data-i18n="start">ALOITA LENTO</span> <span>↗</span></button>
+            <small class="panel-hint" data-i18n="spaceHint">tai paina välilyöntiä</small>
           </div>
           <div class="panel" id="pausePanel" hidden>
-            <div class="panel-kicker">PIENI HENGÄHDYSTAUKO</div>
-            <h2>Lento<br><em>tauolla.</em></h2>
-            <p>Maisemat odottavat juuri siinä, mihin jäit.</p>
-            <button class="primary" id="resumeButton" type="button">JATKA LENTOA <span>↗</span></button>
-            <button class="panel-menu" type="button">MENU</button>
-            <small class="panel-hint">P tai Esc jatkaa myös</small>
+            <div class="panel-kicker" data-i18n="pauseKicker">PIENI HENGÄHDYSTAUKO</div>
+            <h2><span data-i18n="pauseTitle">Lento</span><br><em data-i18n="pauseAccent">tauolla.</em></h2>
+            <p data-i18n="pauseInfo">Maisemat odottavat juuri siinä, mihin jäit.</p>
+            <button class="primary" id="resumeButton" type="button"><span data-i18n="resume">JATKA LENTOA</span> <span>↗</span></button>
+            <button class="panel-menu" type="button" data-i18n="menu">MENU</button>
+            <small class="panel-hint" data-i18n="pauseHint">P tai Esc jatkaa myös</small>
           </div>
           <div class="panel" id="overPanel" hidden>
             <div class="panel-kicker" id="resultKicker">HIENO LENTO</div>
             <h2><span id="resultTitle">Taivas</span><br><em id="resultAccent">odottaa!</em></h2>
             <p id="resultMessage">Jokainen lento vie sinua vähän pidemmälle.</p>
-            <div class="result-row"><div><small>MATKA</small><strong id="finalDistance">0 m</strong></div><div><small>ENNÄTYS</small><strong id="finalBest">0 m</strong></div></div>
-            <button class="primary" id="retryButton" type="button">LENNÄ UUDELLEEN <span>↗</span></button>
-            <button class="panel-menu" type="button">MENU</button>
-            <small class="panel-hint">tai paina välilyöntiä</small>
+            <div class="result-row"><div><small data-i18n="distance">MATKA</small><strong id="finalDistance">0 m</strong></div><div><small data-i18n="record">ENNÄTYS</small><strong id="finalBest">0 m</strong></div></div>
+            <button class="primary" id="retryButton" type="button"><span data-i18n="retry">LENNÄ UUDELLEEN</span> <span>↗</span></button>
+            <button class="panel-menu" type="button" data-i18n="menu">MENU</button>
+            <small class="panel-hint" data-i18n="spaceHint">tai paina välilyöntiä</small>
           </div>
         </div>
       </section>
@@ -442,17 +449,17 @@
       <div class="below-game">
         <div class="music-box" role="group" aria-label="Musiikki ja äänenvoimakkuus">
           <div class="music-line">
-            <div class="track-info"><small>♫ &nbsp; MUSIIKKI</small><strong id="trackName" aria-live="polite">Pilvien yllä</strong></div>
+            <div class="track-info"><small data-i18n="music">♫ MUSIIKKI</small><strong id="trackName" aria-live="polite">Pilvien yllä</strong></div>
             <button class="next-track" id="nextTrack" type="button" aria-label="Vaihda seuraavaan kappaleeseen" title="Seuraava kappale">⇥</button>
           </div>
           <div class="volume-row"><span aria-hidden="true">♪</span><input id="volume" type="range" min="0" max="100" value="40" aria-label="Äänenvoimakkuus"><output id="volumeValue" for="volume">40%</output></div>
           <audio id="musicPlayer" preload="metadata"></audio>
         </div>
         <div class="how" aria-label="Peliohjeet">
-          <div class="how-item"><div class="key-group" aria-hidden="true"><span class="key">←</span><span class="key">↑</span><span class="key">↓</span><span class="key">→</span></div><div class="how-label">LIIKU VAPAASTI<small>Nuolinäppäimet tai WASD</small></div></div>
+          <div class="how-item"><div class="key-group" aria-hidden="true"><span class="key">←</span><span class="key">↑</span><span class="key">↓</span><span class="key">→</span></div><div class="how-label"><span data-i18n="move">LIIKU VAPAASTI</span><small data-i18n="keys">Nuolinäppäimet tai WASD</small></div></div>
           <div class="how-divider"></div>
-          <div class="how-item task"><span style="font-size:25px;color:#ffd273" aria-hidden="true">✳</span><div class="how-label">VARO ESTEITÄ JA TUULTA<small>Kuinka monta metriä lennät?</small></div></div>
-          <div class="tip"><span>✦</span> &nbsp; Pysähdy hetkeksi: P tai Esc</div>
+          <div class="how-item task"><span style="font-size:25px;color:#ffd273" aria-hidden="true">✳</span><div class="how-label"><span data-i18n="avoid">VARO ESTEITÄ JA TUULTA</span><small data-i18n="howFar">Kuinka monta metriä lennät?</small></div></div>
+          <div class="tip" data-i18n="tip">✦ Pysähdy hetkeksi: P tai Esc</div>
         </div>
         <div class="touch-controls" aria-label="Kosketusohjaus">
           <div class="dpad">
@@ -464,24 +471,24 @@
         </div>
       </div>
     </main>
-    <footer class="footer"><span>TEHTY PIENILLE TAUKOHETKILLE <b>♥</b></span><span>SIIPIKLUBI &nbsp; / &nbsp; 01</span></footer>
+    <footer class="footer"><span data-i18n="footer">TEHTY PIENILLE TAUKOHETKILLE ♥</span><span>SIIPIKLUBI &nbsp; / &nbsp; 01</span></footer>
     <div id="announcement" aria-live="polite" style="position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);"></div>
   </div>
 
   <div class="shop-modal" id="shopModal" hidden>
     <section class="shop-dialog" role="dialog" aria-modal="true" aria-labelledby="shopTitle" aria-describedby="shopIntro">
       <div class="shop-header">
-        <div><small>✦ &nbsp; PIENI LENTOPUOTI</small><h2 id="shopTitle">Siipiklubi-kauppa</h2></div>
+        <div><small data-i18n="shopKicker">✦ PIENI LENTOPUOTI</small><h2 id="shopTitle" data-i18n="shopTitle">Siipiklubi-kauppa</h2></div>
         <div class="shop-header-actions"><div class="shop-balance"><span class="coin-mark" aria-hidden="true">●</span> <span id="shopBalance">0</span></div><button class="shop-close" id="closeShop" type="button" aria-label="Sulje kauppa">×</button></div>
       </div>
       <div class="shop-content">
-        <p class="shop-intro" id="shopIntro">Kerää kolikot putkeen: kolmannesta alkaen saat heti bonusta, joka kasvaa kolmen kolikon välein. Ansaitut bonukset säilyvät, vaikka kombo katkeaa. Harvinainen violetti kolikko on kolmen arvoinen. Asut ja asusteet muuttavat vain ulkonäköä.</p>
+        <p class="shop-intro" id="shopIntro" data-i18n="shopIntro">Kerää kolikot putkeen: kolmannesta alkaen saat heti bonusta, joka kasvaa kolmen kolikon välein. Ansaitut bonukset säilyvät, vaikka kombo katkeaa. Harvinainen violetti kolikko on kolmen arvoinen. Asut ja asusteet muuttavat vain ulkonäköä.</p>
         <div class="shop-feedback" id="shopMessage" role="status" hidden></div>
-        <div class="shop-heading"><small>LÖYDÄ OMA TYYLISI</small><h3>Värit ja erikoisasut</h3></div>
+        <div class="shop-heading"><small data-i18n="styleTag">LÖYDÄ OMA TYYLISI</small><h3 data-i18n="skins">Värit ja erikoisasut</h3></div>
         <div class="shop-grid" id="skinItems"></div>
-        <div class="shop-heading"><small>YHDISTELE VÄREIHIN</small><h3>Asusteet</h3></div>
+        <div class="shop-heading"><small data-i18n="combineTag">YHDISTELE VÄREIHIN</small><h3 data-i18n="accessories">Asusteet</h3></div>
         <div class="shop-grid" id="accessoryItems"></div>
-        <div class="shop-heading"><small>PIENI APU MATKAAN</small><h3>Päivitykset</h3></div>
+        <div class="shop-heading"><small data-i18n="upgradeTag">PIENI APU MATKAAN</small><h3 data-i18n="upgrades">Päivitykset</h3></div>
         <div class="shop-grid" id="upgradeItems"></div>
       </div>
     </section>
@@ -525,6 +532,7 @@
       let pipesPassed = 0;
       let coinCombo = 0;
       let coinReceiptRemaining = 0;
+      let lastCoinAward = 0;
       let best = 0;
       let soundOn = true;
       let masterVolume = .4;
@@ -532,6 +540,8 @@
       let soundContext;
       let trackIndex = 0;
       let resultIndex = 0;
+      let lastResult = null;
+      let lastWasRecord = false;
       let scenery = 0;
       let animTime = 0;
       let lastTime = 0;
@@ -547,6 +557,152 @@
       const keyboard = new Set();
       const touchPointers = new Map();
       const directionByCode = { ArrowUp: 'up', KeyW: 'up', ArrowDown: 'down', KeyS: 'down', ArrowLeft: 'left', KeyA: 'left', ArrowRight: 'right', KeyD: 'right' };
+      // Language order: Finnish, English, Ukrainian, Russian, Swedish, Norwegian, Spanish, Italian.
+      const languageCodes = ['fi', 'en', 'uk', 'ru', 'sv', 'no', 'es', 'it'];
+      const translations = {
+        language: ['Kieli', 'Language', 'Мова', 'Язык', 'Språk', 'Språk', 'Idioma', 'Lingua'],
+        brandSub: ['PIENI LENTOKERHO', 'LITTLE FLIGHT CLUB', 'МАЛИЙ ЛЬОТНИЙ КЛУБ', 'МАЛЕНЬКИЙ ЛЁТНЫЙ КЛУБ', 'LILLA FLYGKLUBBEN', 'DEN LILLE FLYKLUBBEN', 'PEQUEÑO CLUB DE VUELO', 'PICCOLO CLUB DI VOLO'],
+        free: ['✦ PELAA ILMAISEKSI', '✦ PLAY FREE', '✦ ГРАЙТЕ БЕЗКОШТОВНО', '✦ ИГРАЙТЕ БЕСПЛАТНО', '✦ SPELA GRATIS', '✦ SPILL GRATIS', '✦ JUEGA GRATIS', '✦ GIOCA GRATIS'],
+        shop: ['KAUPPA', 'SHOP', 'КРАМНИЦЯ', 'МАГАЗИН', 'BUTIK', 'BUTIKK', 'TIENDA', 'NEGOZIO'],
+        tagline: ['PIENI PELI SUURILLE LENNOILLE', 'A LITTLE GAME FOR BIG FLIGHTS', 'МАЛА ГРА ДЛЯ ВЕЛИКИХ ПОЛЬОТІВ', 'МАЛЕНЬКАЯ ИГРА ДЛЯ БОЛЬШИХ ПОЛЁТОВ', 'ETT LITET SPEL FÖR STORA FLYGTURER', 'ET LITE SPILL FOR STORE FLYTURER', 'UN JUEGO PEQUEÑO PARA GRANDES VUELOS', 'UN PICCOLO GIOCO PER GRANDI VOLI'],
+        headline: ['Taivas on sinun.', 'The sky is yours.', 'Небо твоє.', 'Небо твоё.', 'Himlen är din.', 'Himmelen er din.', 'El cielo es tuyo.', 'Il cielo è tuo.'],
+        introNote: ['YKSI LINTU. LOPUTTOMASTI TAIVASTA. KUINKA PITKÄLLE SINÄ PÄÄSET?', 'ONE BIRD. ENDLESS SKY. HOW FAR CAN YOU FLY?', 'ОДНА ПТАШКА. БЕЗМЕЖНЕ НЕБО. ЯК ДАЛЕКО ТИ ПОЛЕТИШ?', 'ОДНА ПТИЦА. БЕСКРАЙНЕЕ НЕБО. КАК ДАЛЕКО ТЫ УЛЕТИШЬ?', 'EN FÅGEL. EN OÄNDLIG HIMMEL. HUR LÅNGT FLYGER DU?', 'ÉN FUGL. EN ENDELØS HIMMEL. HVOR LANGT FLYR DU?', 'UN PÁJARO. UN CIELO INFINITO. ¿HASTA DÓNDE LLEGARÁS?', 'UN UCCELLINO. UN CIELO INFINITO. FIN DOVE VOLERAI?'],
+        distance: ['MATKA', 'DISTANCE', 'ВІДСТАНЬ', 'ДИСТАНЦИЯ', 'STRÄCKA', 'DISTANSE', 'DISTANCIA', 'DISTANZA'],
+        record: ['ENNÄTYS', 'BEST', 'РЕКОРД', 'РЕКОРД', 'REKORD', 'REKORD', 'RÉCORD', 'RECORD'],
+        menu: ['MENU', 'MENU', 'МЕНЮ', 'МЕНЮ', 'MENY', 'MENY', 'MENÚ', 'MENU'],
+        flightMode: ['✦ LENTOTILA: VAPAA', '✦ FREE FLIGHT', '✦ ВІЛЬНИЙ ПОЛІТ', '✦ СВОБОДНЫЙ ПОЛЁТ', '✦ FRI FLYGNING', '✦ FRI FLYTUR', '✦ VUELO LIBRE', '✦ VOLO LIBERO'],
+        speed: ['VAUHTI', 'SPEED', 'ШВИДКІСТЬ', 'СКОРОСТЬ', 'FART', 'FART', 'VELOCIDAD', 'VELOCITÀ'],
+        welcome: ['TERVETULOA KYYTIIN', 'WELCOME ABOARD', 'ЛАСКАВО ПРОСИМО', 'ДОБРО ПОЖАЛОВАТЬ', 'VÄLKOMMEN OMBORD', 'VELKOMMEN OMBORD', 'BIENVENIDO A BORDO', 'BENVENUTO A BORDO'],
+        readyTitle: ['Siivet auki.', 'Spread your wings.', 'Розправ крила.', 'Расправь крылья.', 'Bred ut vingarna.', 'Spre vingene.', 'Abre las alas.', 'Apri le ali.'],
+        readyAccent: ['Menoksi!', 'Let’s fly!', 'Летімо!', 'Полетели!', 'Nu flyger vi!', 'La oss fly!', '¡A volar!', 'Si vola!'],
+        readyInfo: ['Kerää kolikot, väistä esteet ja siirry sivulle portin kohdalla!', 'Collect coins, avoid obstacles and move into the gate opening!', 'Збирай монети, уникай перешкод і лети в отвір воріт!', 'Собирай монеты, избегай препятствий и лети в проём ворот!', 'Samla mynt, undvik hinder och flyg genom portens öppning!', 'Samle mynter, unngå hindre og fly gjennom åpningen i porten!', '¡Recoge monedas, esquiva obstáculos y cruza la abertura!', 'Raccogli monete, evita gli ostacoli e attraversa il varco!'],
+        controls: ['Ohjaa kaikkiin suuntiin', 'Move in any direction', 'Рухайся в усіх напрямках', 'Двигайся в любом направлении', 'Styr åt alla håll', 'Styr i alle retninger', 'Muévete en cualquier dirección', 'Muoviti in ogni direzione'],
+        controlsDetail: ['Nuolet, WASD tai kosketusohjain', 'Arrow keys, WASD or touch controls', 'Стрілки, WASD або сенсорні кнопки', 'Стрелки, WASD или сенсорные кнопки', 'Piltangenter, WASD eller pekskärm', 'Piltaster, WASD eller berøringskontroll', 'Flechas, WASD o controles táctiles', 'Frecce, WASD o comandi touch'],
+        start: ['ALOITA LENTO', 'START FLIGHT', 'ПОЧАТИ ПОЛІТ', 'НАЧАТЬ ПОЛЁТ', 'STARTA FLYGTUREN', 'START FLYTUREN', 'INICIAR VUELO', 'INIZIA IL VOLO'],
+        spaceHint: ['tai paina välilyöntiä', 'or press Space', 'або натисни пробіл', 'или нажми пробел', 'eller tryck på mellanslag', 'eller trykk mellomrom', 'o pulsa la barra espaciadora', 'o premi la barra spaziatrice'],
+        pauseKicker: ['PIENI HENGÄHDYSTAUKO', 'TIME FOR A BREAK', 'ЧАС ВІДПОЧИТИ', 'ВРЕМЯ ОТДОХНУТЬ', 'DAGS FÖR EN PAUS', 'TID FOR EN PAUSE', 'HORA DE DESCANSAR', 'UNA PICCOLA PAUSA'],
+        pauseTitle: ['Lento', 'Flight', 'Політ', 'Полёт', 'Flygningen', 'Flyturen', 'Vuelo', 'Volo'],
+        pauseAccent: ['tauolla.', 'paused.', 'на паузі.', 'на паузе.', 'är pausad.', 'er pauset.', 'en pausa.', 'in pausa.'],
+        pauseInfo: ['Maisemat odottavat juuri siinä, mihin jäit.', 'The sky will wait right where you left it.', 'Небо зачекає саме там, де ти зупинився.', 'Небо подождёт там, где ты остановился.', 'Himlen väntar där du lämnade den.', 'Himmelen venter der du slapp.', 'El cielo espera donde lo dejaste.', 'Il cielo ti aspetta dove l’hai lasciato.'],
+        resume: ['JATKA LENTOA', 'RESUME FLIGHT', 'ПРОДОВЖИТИ ПОЛІТ', 'ПРОДОЛЖИТЬ ПОЛЁТ', 'FORTSÄTT FLYGA', 'FORTSETT FLYTUREN', 'CONTINUAR VUELO', 'RIPRENDI IL VOLO'],
+        pauseHint: ['P tai Esc jatkaa myös', 'P or Esc also resumes', 'P або Esc також продовжує гру', 'P или Esc также продолжает игру', 'P eller Esc fortsätter också', 'P eller Esc fortsetter også', 'P o Esc también continúa', 'P o Esc per riprendere'],
+        retry: ['LENNÄ UUDELLEEN', 'FLY AGAIN', 'ЛЕТІТИ ЩЕ РАЗ', 'ЛЕТЕТЬ ЕЩЁ РАЗ', 'FLYG IGEN', 'FLY IGJEN', 'VOLAR DE NUEVO', 'VOLA ANCORA'],
+        music: ['♫ MUSIIKKI', '♫ MUSIC', '♫ МУЗИКА', '♫ МУЗЫКА', '♫ MUSIK', '♫ MUSIKK', '♫ MÚSICA', '♫ MUSICA'],
+        move: ['LIIKU VAPAASTI', 'MOVE FREELY', 'РУХАЙСЯ ВІЛЬНО', 'ДВИГАЙСЯ СВОБОДНО', 'RÖR DIG FRITT', 'BEVEG DEG FRITT', 'MUÉVETE LIBREMENTE', 'MUOVITI LIBERAMENTE'],
+        keys: ['Nuolinäppäimet tai WASD', 'Arrow keys or WASD', 'Стрілки або WASD', 'Стрелки или WASD', 'Piltangenter eller WASD', 'Piltaster eller WASD', 'Flechas o WASD', 'Frecce o WASD'],
+        avoid: ['VARO ESTEITÄ JA TUULTA', 'AVOID OBSTACLES AND WIND', 'УНИКАЙ ПЕРЕШКОД І ВІТРУ', 'ИЗБЕГАЙ ПРЕПЯТСТВИЙ И ВЕТРА', 'UNDVIK HINDER OCH VIND', 'UNNGÅ HINDRE OG VIND', 'ESQUIVA OBSTÁCULOS Y VIENTO', 'EVITA OSTACOLI E VENTO'],
+        howFar: ['Kuinka monta metriä lennät?', 'How many metres can you fly?', 'Скільки метрів ти пролетиш?', 'Сколько метров ты пролетишь?', 'Hur många meter flyger du?', 'Hvor mange meter flyr du?', '¿Cuántos metros volarás?', 'Quanti metri volerai?'],
+        tip: ['✦ Pysähdy hetkeksi: P tai Esc', '✦ Take a break: P or Esc', '✦ Пауза: P або Esc', '✦ Пауза: P или Esc', '✦ Pausa: P eller Esc', '✦ Pause: P eller Esc', '✦ Pausa: P o Esc', '✦ Pausa: P o Esc'],
+        footer: ['TEHTY PIENILLE TAUKOHETKILLE ♥', 'MADE FOR LITTLE BREAKS ♥', 'ДЛЯ МАЛЕНЬКИХ ПЕРЕРВ ♥', 'ДЛЯ МАЛЕНЬКИХ ПЕРЕРЫВОВ ♥', 'GJORT FÖR SMÅ PAUSER ♥', 'LAGET FOR SMÅ PAUSER ♥', 'HECHO PARA PEQUEÑOS DESCANSOS ♥', 'FATTO PER PICCOLE PAUSE ♥'],
+        shopKicker: ['✦ PIENI LENTOPUOTI', '✦ LITTLE FLIGHT SHOP', '✦ МАЛА ЛЬОТНА КРАМНИЦЯ', '✦ МАЛЕНЬКИЙ ЛЁТНЫЙ МАГАЗИН', '✦ LILLA FLYGBUTIKEN', '✦ DEN LILLE FLYBUTIKKEN', '✦ PEQUEÑA TIENDA DE VUELO', '✦ PICCOLO NEGOZIO DI VOLO'],
+        shopTitle: ['Siipiklubi-kauppa', 'Siipiklubi shop', 'Крамниця Siipiklubi', 'Магазин Siipiklubi', 'Siipiklubi-butiken', 'Siipiklubi-butikken', 'Tienda Siipiklubi', 'Negozio Siipiklubi'],
+        shopIntro: ['Kerää kolikot putkeen: kolmannesta alkaen saat heti bonusta, joka kasvaa kolmen kolikon välein. Ansaitut bonukset säilyvät, vaikka kombo katkeaa. Harvinainen violetti kolikko on kolmen arvoinen. Asut ja asusteet muuttavat vain ulkonäköä.', 'Collect coins in a row: from the third coin you earn an immediate bonus that grows every three coins. Earned bonuses are yours even if the combo ends. Rare purple coins are worth three. Outfits and accessories are cosmetic.', 'Збирай монети поспіль: з третьої отримуй бонус одразу, він зростає кожні три монети. Зароблений бонус залишається після завершення комбо. Рідкісна фіолетова монета варта трьох. Вбрання та аксесуари лише змінюють вигляд.', 'Собирай монеты подряд: с третьей сразу получай бонус, который растёт каждые три монеты. Заработанный бонус остаётся после завершения комбо. Редкая фиолетовая монета стоит три. Наряды и аксессуары меняют только внешний вид.', 'Samla mynt i följd: från det tredje får du en bonus direkt som ökar vart tredje mynt. Intjänad bonus behålls när kombon bryts. Sällsynta lila mynt är värda tre. Kläder och tillbehör ändrar bara utseendet.', 'Samle mynter på rad: fra den tredje får du en bonus med en gang, som øker for hver tredje mynt. Opptjent bonus beholdes når komboen brytes. Sjeldne lilla mynter er verdt tre. Antrekk og tilbehør endrer bare utseendet.', 'Recoge monedas seguidas: desde la tercera recibes al instante una bonificación que crece cada tres monedas. Conservas lo ganado aunque termine el combo. Las monedas moradas valen tres. Los trajes y accesorios solo cambian la apariencia.', 'Raccogli monete consecutive: dalla terza ricevi subito un bonus che cresce ogni tre monete. I bonus guadagnati restano anche quando la combo finisce. Le monete viola valgono tre. Abiti e accessori cambiano solo l’aspetto.'],
+        styleTag: ['LÖYDÄ OMA TYYLISI', 'FIND YOUR STYLE', 'ЗНАЙДИ СВІЙ СТИЛЬ', 'НАЙДИ СВОЙ СТИЛЬ', 'HITTA DIN STIL', 'FINN DIN STIL', 'ENCUENTRA TU ESTILO', 'TROVA IL TUO STILE'],
+        skins: ['Värit ja erikoisasut', 'Colours and special outfits', 'Кольори та особливе вбрання', 'Цвета и особые наряды', 'Färger och specialdräkter', 'Farger og spesialantrekk', 'Colores y trajes especiales', 'Colori e abiti speciali'],
+        combineTag: ['YHDISTELE VÄREIHIN', 'MIX WITH COLOURS', 'ПОЄДНУЙ ІЗ КОЛЬОРАМИ', 'СОЧЕТАЙ С ЦВЕТАМИ', 'KOMBINERA MED FÄRGER', 'KOMBINER MED FARGER', 'COMBINA CON COLORES', 'ABBINA AI COLORI'],
+        accessories: ['Asusteet', 'Accessories', 'Аксесуари', 'Аксессуары', 'Tillbehör', 'Tilbehør', 'Accesorios', 'Accessori'],
+        upgradeTag: ['PIENI APU MATKAAN', 'A LITTLE HELP', 'МАЛЕНЬКА ДОПОМОГА', 'НЕМНОГО ПОМОЩИ', 'LITE HJÄLP PÅ VÄGEN', 'LITT HJELP PÅ VEIEN', 'UNA PEQUEÑA AYUDA', 'UN PICCOLO AIUTO'],
+        upgrades: ['Päivitykset', 'Upgrades', 'Покращення', 'Улучшения', 'Uppgraderingar', 'Oppgraderinger', 'Mejoras', 'Miglioramenti'],
+        equipped: ['KÄYTÖSSÄ', 'EQUIPPED', 'ОДЯГНЕНО', 'НАДЕТО', 'ANVÄNDS', 'I BRUK', 'EQUIPADO', 'INDOSSATO'],
+        remove: ['POISTA KÄYTÖSTÄ', 'REMOVE', 'ЗНЯТИ', 'СНЯТЬ', 'TA AV', 'TA AV', 'QUITAR', 'RIMUOVI'],
+        equip: ['OTA KÄYTTÖÖN', 'EQUIP', 'ОДЯГТИ', 'НАДЕТЬ', 'ANVÄND', 'BRUK', 'EQUIPAR', 'INDOSSA'],
+        purchased: ['OSTETTU', 'PURCHASED', 'КУПЛЕНО', 'КУПЛЕНО', 'KÖPT', 'KJØPT', 'COMPRADO', 'ACQUISTATO'],
+        buy: ['OSTA', 'BUY', 'КУПИТИ', 'КУПИТЬ', 'KÖP', 'KJØP', 'COMPRAR', 'ACQUISTA'],
+        skinDescription: ['Vain ulkonäköä, ei pelietua.', 'Cosmetic only; no gameplay advantage.', 'Лише зовнішній вигляд, без ігрової переваги.', 'Только внешний вид, без игрового преимущества.', 'Bara utseende, ingen spelfördel.', 'Kun utseende, ingen spillfordel.', 'Solo estético, sin ventaja en el juego.', 'Solo estetico, nessun vantaggio di gioco.'],
+        accessoryDescription: ['Yhdistele väreihin ja muihin asusteisiin.', 'Mix with colours and other accessories.', 'Поєднуй із кольорами та іншими аксесуарами.', 'Сочетай с цветами и другими аксессуарами.', 'Kombinera med färger och andra tillbehör.', 'Kombiner med farger og annet tilbehør.', 'Combínalo con colores y otros accesorios.', 'Abbinalo a colori e altri accessori.'],
+        headDescription: ['Yhdistele väreihin. Päähine peittää kultakruunun.', 'Mix with colours. Headwear covers the gold crown.', 'Поєднуй із кольорами. Головний убір закриває корону.', 'Сочетай с цветами. Головной убор скрывает корону.', 'Kombinera med färger. Huvudbonaden döljer kronan.', 'Kombiner med farger. Hodeplagget dekker kronen.', 'Combínalo con colores. Cubre la corona dorada.', 'Abbinalo ai colori. Copre la corona dorata.'],
+        upgradeSwift: ['Ohjausnopeus kasvaa 8 %. Tuulta vastaan pääsee hitaasti.', 'Movement speed increases by 8%. You can move slowly against the wind.', 'Швидкість руху зростає на 8%. Проти вітру можна рухатися повільно.', 'Скорость движения растёт на 8%. Против ветра можно двигаться медленно.', 'Rörelsehastigheten ökar 8 %. Du kan röra dig långsamt mot vinden.', 'Bevegelsesfarten øker 8 %. Du kan bevege deg sakte mot vinden.', 'La velocidad aumenta un 8 %. Puedes avanzar despacio contra el viento.', 'La velocità aumenta dell’8%. Puoi muoverti lentamente controvento.'],
+        upgradeMagnet: ['Kolikot tarttuvat hiukan kauempaa.', 'Collect coins from slightly farther away.', 'Монети збираються з трохи більшої відстані.', 'Монеты собираются с чуть большего расстояния.', 'Samla mynt från lite längre håll.', 'Samle mynter fra litt lenger avstand.', 'Recoge monedas desde un poco más lejos.', 'Raccogli monete da un po’ più lontano.'],
+        upgradeRoomy: ['Uusien putkien aukot levenevät 20 ja porttien aukot 10 yksikköä.', 'New pipe openings are 20 units wider and gates 10 units wider.', 'Нові отвори труб ширші на 20, воріт — на 10 одиниць.', 'Новые проёмы труб шире на 20, ворот — на 10 единиц.', 'Nya röröppningar blir 20 och portar 10 enheter bredare.', 'Nye røråpninger blir 20 og porter 10 enheter bredere.', 'Las nuevas aberturas son 20 unidades más anchas y las puertas 10.', 'Le nuove aperture sono più larghe di 20 unità e i varchi di 10.'],
+        upgradeLookout: ['Saat puoli sekuntia enemmän aikaa valmistautua porttiin.', 'Get half a second more warning before a gate.', 'Отримуй на пів секунди більше часу перед воротами.', 'Получай на полсекунды больше времени перед воротами.', 'Få en halv sekund längre förvarning före porten.', 'Få et halvt sekund mer varsling før porten.', 'Recibe medio segundo más de aviso antes de una puerta.', 'Hai mezzo secondo in più di preavviso prima di un varco.'],
+        upgradeBreeze: ['Tuulijakso lyhenee hieman, mutta tuuli pysyy yhtä vahvana.', 'Gusts are slightly shorter, but just as strong.', 'Пориви трохи коротші, але так само сильні.', 'Порывы немного короче, но столь же сильны.', 'Vindbyarna blir lite kortare men lika starka.', 'Vindkastene blir litt kortere, men like sterke.', 'Las ráfagas duran un poco menos, pero son igual de fuertes.', 'Le raffiche durano un po’ meno, ma sono altrettanto forti.']
+      };
+      Object.assign(translations, {
+        home: ['Siipiklubi – siirry aloitusnäyttöön', 'Siipiklubi – go to start', 'Siipiklubi – на початок', 'Siipiklubi – на начало', 'Siipiklubi – till start', 'Siipiklubi – til start', 'Siipiklubi – ir al inicio', 'Siipiklubi – vai all’inizio'],
+        stage: ['Siipiklubin pelialue', 'Siipiklubi game area', 'Ігрове поле Siipiklubi', 'Игровое поле Siipiklubi', 'Siipiklubis spelområde', 'Siipiklubis spillområde', 'Área de juego Siipiklubi', 'Area di gioco Siipiklubi'],
+        canvas: ['Lintu lentää ja väistää esteitä.', 'A bird flies and avoids obstacles.', 'Пташка летить і уникає перешкод.', 'Птица летит и избегает препятствий.', 'En fågel flyger och undviker hinder.', 'En fugl flyr og unngår hindringer.', 'Un pájaro vuela y esquiva obstáculos.', 'Un uccellino vola ed evita gli ostacoli.'],
+        pause: ['Keskeytä peli', 'Pause game', 'Призупинити гру', 'Приостановить игру', 'Pausa spelet', 'Sett spillet på pause', 'Pausar juego', 'Metti in pausa'],
+        closeShop: ['Sulje kauppa', 'Close shop', 'Закрити крамницю', 'Закрыть магазин', 'Stäng butiken', 'Lukk butikken', 'Cerrar tienda', 'Chiudi negozio'],
+        openShop: ['Avaa kauppa, kolikoita {n}', 'Open shop, {n} coins', 'Відкрити крамницю, монет: {n}', 'Открыть магазин, монет: {n}', 'Öppna butiken, {n} mynt', 'Åpne butikken, {n} mynter', 'Abrir tienda, {n} monedas', 'Apri negozio, {n} monete'],
+        audioGroup: ['Musiikki ja äänenvoimakkuus', 'Music and volume', 'Музика та гучність', 'Музыка и громкость', 'Musik och volym', 'Musikk og volum', 'Música y volumen', 'Musica e volume'],
+        nextTrack: ['Seuraava kappale', 'Next track', 'Наступна пісня', 'Следующий трек', 'Nästa låt', 'Neste låt', 'Siguiente canción', 'Brano successivo'],
+        volume: ['Äänenvoimakkuus', 'Volume', 'Гучність', 'Громкость', 'Volym', 'Volum', 'Volumen', 'Volume'],
+        soundOn: ['ÄÄNET PÄÄLLÄ', 'SOUND ON', 'ЗВУК УВІМКНЕНО', 'ЗВУК ВКЛЮЧЁН', 'LJUD PÅ', 'LYD PÅ', 'SONIDO ACTIVADO', 'AUDIO ATTIVO'],
+        soundOff: ['ÄÄNET POIS', 'SOUND OFF', 'ЗВУК ВИМКНЕНО', 'ЗВУК ВЫКЛЮЧЕН', 'LJUD AV', 'LYD AV', 'SONIDO DESACTIVADO', 'AUDIO DISATTIVO'],
+        mute: ['Mykistä äänet', 'Mute sound', 'Вимкнути звук', 'Выключить звук', 'Stäng av ljudet', 'Slå av lyden', 'Silenciar sonido', 'Disattiva audio'],
+        unmute: ['Laita äänet päälle', 'Turn on sound', 'Увімкнути звук', 'Включить звук', 'Slå på ljudet', 'Slå på lyden', 'Activar sonido', 'Attiva audio'],
+        instructions: ['Peliohjeet', 'Game instructions', 'Інструкції до гри', 'Инструкции к игре', 'Spelinstruktioner', 'Spilleregler', 'Instrucciones del juego', 'Istruzioni di gioco'],
+        touch: ['Kosketusohjaus', 'Touch controls', 'Сенсорне керування', 'Сенсорное управление', 'Pekkontroller', 'Berøringskontroller', 'Controles táctiles', 'Comandi touch'],
+        up: ['Ylös', 'Up', 'Вгору', 'Вверх', 'Upp', 'Opp', 'Arriba', 'Su'],
+        down: ['Alas', 'Down', 'Вниз', 'Вниз', 'Ner', 'Ned', 'Abajo', 'Giù'],
+        left: ['Taakse', 'Back', 'Назад', 'Назад', 'Bakåt', 'Bakover', 'Atrás', 'Indietro'],
+        right: ['Eteen', 'Forward', 'Уперед', 'Вперёд', 'Framåt', 'Fremover', 'Adelante', 'Avanti'],
+        need: ['Tarvitset vielä {n} kolikkoa.', 'You need {n} more coins.', 'Потрібно ще монет: {n}.', 'Нужно ещё монет: {n}.', 'Du behöver {n} mynt till.', 'Du trenger {n} mynter til.', 'Necesitas {n} monedas más.', 'Ti servono altre {n} monete.'],
+        nowEquipped: ['{item} on nyt käytössä!', '{item} is now equipped!', 'Одягнено: {item}!', 'Надето: {item}!', '{item} används nu!', '{item} er nå i bruk!', '¡{item} está equipado!', '{item} è ora indossato!'],
+        removed: ['{item} poistettiin käytöstä.', '{item} was removed.', 'Знято: {item}.', 'Снято: {item}.', '{item} har tagits av.', '{item} er tatt av.', 'Se ha quitado: {item}.', 'Rimosso: {item}.'],
+        bought: ['{item} on ostettu!', '{item} purchased!', 'Придбано: {item}!', 'Куплено: {item}!', '{item} är köpt!', '{item} er kjøpt!', '¡Comprado: {item}!', 'Acquistato: {item}!'],
+        started: ['Lento alkoi!', 'Flight started!', 'Політ розпочався!', 'Полёт начался!', 'Flygturen har börjat!', 'Flyturen har startet!', '¡El vuelo ha comenzado!', 'Il volo è iniziato!'],
+        paused: ['Peli on tauolla.', 'Game paused.', 'Гру призупинено.', 'Игра приостановлена.', 'Spelet är pausat.', 'Spillet er pauset.', 'Juego en pausa.', 'Gioco in pausa.'],
+        resumed: ['Lento jatkuu.', 'Flight resumed.', 'Політ триває.', 'Полёт продолжается.', 'Flygturen fortsätter.', 'Flyturen fortsetter.', 'El vuelo continúa.', 'Il volo continua.'],
+        homeStatus: ['Aloitusnäyttö. Voit aloittaa uuden lennon.', 'Start screen. Start a new flight.', 'Початковий екран. Почни новий політ.', 'Начальный экран. Начни новый полёт.', 'Startskärm. Starta en ny flygtur.', 'Startskjerm. Start en ny flytur.', 'Pantalla de inicio. Inicia un vuelo nuevo.', 'Schermata iniziale. Inizia un nuovo volo.'],
+        resultKicker: ['HIENO LENTO', 'GREAT FLIGHT', 'ЧУДОВИЙ ПОЛІТ', 'ОТЛИЧНЫЙ ПОЛЁТ', 'FIN FLYGTUR', 'FLOTT FLYTUR', 'GRAN VUELO', 'OTTIMO VOLO'],
+        resultTitle: ['Upea', 'Great', 'Чудовий', 'Отличный', 'En fin', 'En flott', 'Gran', 'Ottimo'],
+        resultAccent: ['lento!', 'flight!', 'політ!', 'полёт!', 'flygtur!', 'flytur!', '¡vuelo!', 'volo!'],
+        resultInfo: ['Jokainen lento vie sinua vähän pidemmälle.', 'Every flight takes you a little farther.', 'Кожен політ веде тебе трохи далі.', 'Каждый полёт уносит тебя немного дальше.', 'Varje flygtur tar dig lite längre.', 'Hver flytur tar deg litt lenger.', 'Cada vuelo te lleva un poco más lejos.', 'Ogni volo ti porta un po’ più lontano.'],
+        newRecord: ['UUSI ENNÄTYS!', 'NEW RECORD!', 'НОВИЙ РЕКОРД!', 'НОВЫЙ РЕКОРД!', 'NYTT REKORD!', 'NY REKORD!', '¡NUEVO RÉCORD!', 'NUOVO RECORD!'],
+        recordInfo: ['Uusi ennätys! Upea lento!', 'A new record! What a flight!', 'Новий рекорд! Чудовий політ!', 'Новый рекорд! Отличный полёт!', 'Nytt rekord! Vilken flygtur!', 'Ny rekord! For en flytur!', '¡Nuevo récord! ¡Gran vuelo!', 'Nuovo record! Che volo!'],
+        resultStatus: ['Matka {distance} metriä, ennätys {best} metriä.', 'Distance {distance} metres, best {best} metres.', 'Відстань: {distance} м, рекорд: {best} м.', 'Дистанция: {distance} м, рекорд: {best} м.', 'Sträcka {distance} meter, rekord {best} meter.', 'Distanse {distance} meter, rekord {best} meter.', 'Distancia: {distance} metros, récord: {best} metros.', 'Distanza: {distance} metri, record: {best} metri.'],
+        coins: ['KOLIKOT', 'COINS', 'МОНЕТИ', 'МОНЕТЫ', 'MYNT', 'MYNTER', 'MONEDAS', 'MONETE'],
+        combo: ['KOMBO', 'COMBO', 'КОМБО', 'КОМБО', 'KOMBO', 'KOMBO', 'COMBO', 'COMBO'],
+        bonus: ['BONUS', 'BONUS', 'БОНУС', 'БОНУС', 'BONUS', 'BONUS', 'BONO', 'BONUS'],
+        coinStatus: ['Kolikko kerätty: +{amount}. Kombo {combo}. Kolikoita {coins}.', 'Coin collected: +{amount}. Combo {combo}. Coins: {coins}.', 'Монету зібрано: +{amount}. Комбо {combo}. Монет: {coins}.', 'Монета собрана: +{amount}. Комбо {combo}. Монет: {coins}.', 'Mynt samlat: +{amount}. Kombo {combo}. Mynt: {coins}.', 'Mynt samlet: +{amount}. Kombo {combo}. Mynter: {coins}.', 'Moneda recogida: +{amount}. Combo {combo}. Monedas: {coins}.', 'Moneta raccolta: +{amount}. Combo {combo}. Monete: {coins}.'],
+        comboLost: ['Kolikko jäi ulottumattomiin – kombo katkesi.', 'Coin out of reach – combo ended.', 'Монета недосяжна — комбо завершено.', 'Монета недоступна — комбо завершено.', 'Myntet är utom räckhåll – kombon bröts.', 'Mynten er utenfor rekkevidde – komboen brøt.', 'Moneda fuera de alcance: terminó el combo.', 'Moneta fuori portata: combo terminata.'],
+        gateWarning: ['SIIRRY AUKKOON', 'MOVE INTO THE GAP', 'ЛЕТИ В ОТВІР', 'ЛЕТИ В ПРОЁМ', 'STYR MOT ÖPPNINGEN', 'STYR MOT ÅPNINGEN', 'VE HACIA LA ABERTURA', 'VAI VERSO IL VARCO'],
+        stormWarning: ['MYRSKYVAROITUS', 'STORM WARNING', 'ПОПЕРЕДЖЕННЯ ПРО БУРЮ', 'ШТОРМОВОЕ ПРЕДУПРЕЖДЕНИЕ', 'STORMVARNING', 'STORMVARSEL', 'AVISO DE TORMENTA', 'ALLERTA TEMPESTA'],
+        strongWind: ['VOIMAKAS TUULI', 'STRONG WIND', 'СИЛЬНИЙ ВІТЕР', 'СИЛЬНЫЙ ВЕТЕР', 'STARK VIND', 'STERK VIND', 'VIENTO FUERTE', 'VENTO FORTE'],
+        windRecovery: ['Tuuli laantui. Hetki aikaa palautua!', 'The wind has eased. Take a moment to recover!', 'Вітер стих. Є час перепочити!', 'Ветер стих. Есть время передохнуть!', 'Vinden har mojnat. Ta en stund att återhämta dig!', 'Vinden har løyet. Ta deg tid til å hente deg inn!', 'El viento ha amainado. ¡Tómate un respiro!', 'Il vento è calato. Prenditi un momento per riprenderti!'],
+        cleared: ['Hienosti väistetty! Lento jatkuu.', 'Nicely dodged! Keep flying.', 'Чудово ухилено! Політ триває.', 'Отлично увернулся! Полёт продолжается.', 'Snyggt undviket! Flygturen fortsätter.', 'Godt unngått! Flyturen fortsetter.', '¡Bien esquivado! El vuelo continúa.', 'Ben schivato! Il volo continua.'],
+        passed: ['Este ohitettu, matka {distance} metriä.', 'Obstacle passed, distance {distance} metres.', 'Перешкоду подолано, відстань {distance} м.', 'Препятствие пройдено, дистанция {distance} м.', 'Hinder passerat, sträcka {distance} meter.', 'Hinder passert, distanse {distance} meter.', 'Obstáculo superado, distancia {distance} metros.', 'Ostacolo superato, distanza {distance} metri.']
+      });
+      Object.assign(translations, {
+        leftDirection: ['vasemmalle', 'left', 'ліворуч', 'налево', 'vänster', 'venstre', 'a la izquierda', 'a sinistra'],
+        rightDirection: ['oikealle', 'right', 'праворуч', 'направо', 'höger', 'høyre', 'a la derecha', 'a destra'],
+        gateStatus: ['Portti tulossa! Siirry aukkoon {direction}.', 'Gate ahead! Move into the gap {direction}.', 'Попереду ворота! Лети в отвір {direction}.', 'Впереди ворота! Лети в проём {direction}.', 'Port framför dig! Flyg mot öppningen åt {direction}.', 'Port foran deg! Fly mot åpningen til {direction}.', '¡Puerta delante! Ve hacia la abertura {direction}.', 'Varco davanti! Vola nell’apertura {direction}.'],
+        stormStatus: ['Myrskyvaroitus! Voimakas tuuli alkaa pian oikealle.', 'Storm warning! Strong wind will soon blow right.', 'Попередження про бурю! Скоро подме сильний вітер праворуч.', 'Штормовое предупреждение! Скоро подует сильный ветер направо.', 'Stormvarning! Stark vind blåser snart åt höger.', 'Stormvarsel! Sterk vind blåser snart mot høyre.', '¡Aviso de tormenta! Pronto soplará viento fuerte hacia la derecha.', 'Allerta tempesta! Presto soffierà vento forte verso destra.'],
+        windStatus: ['Voimakas tuuli puhaltaa {direction}. Voit väistää ylös tai alas.', 'Strong wind blows {direction}. You can move up or down.', 'Сильний вітер дме {direction}. Можна ухилитися вгору чи вниз.', 'Сильный ветер дует {direction}. Можно уклониться вверх или вниз.', 'Stark vind blåser åt {direction}. Du kan väja uppåt eller nedåt.', 'Sterk vind blåser mot {direction}. Du kan vike opp eller ned.', 'Viento fuerte {direction}. Puedes esquivarlo hacia arriba o abajo.', 'Vento forte {direction}. Puoi evitarlo verso l’alto o il basso.']
+      });
+      Object.assign(translations, {
+        sparkleDescription: ['Kimalteleva erikoisasu; muuttaa vain ulkonäköä.', 'A shimmering outfit; cosmetic only.', 'Сяюче вбрання; лише для вигляду.', 'Сияющий наряд; только для внешнего вида.', 'En skimrande dräkt; bara utseende.', 'Et glitrende antrekk; bare utseende.', 'Un traje brillante; solo estético.', 'Un abito scintillante; solo estetico.'],
+        crownDescription: ['Kultainen asu ja kruunu. Päähineet peittävät kruunun.', 'Golden outfit with a crown. Headwear covers the crown.', 'Золотий наряд із короною. Головний убір закриває корону.', 'Золотой наряд с короной. Головной убор скрывает корону.', 'Gyllene dräkt med krona. Huvudbonader döljer kronan.', 'Gyllent antrekk med krone. Hodeplagg dekker kronen.', 'Traje dorado con corona. Los sombreros cubren la corona.', 'Abito dorato con corona. I cappelli coprono la corona.'],
+        rainbowDescription: ['Harvinainen sateenkaaren värinen asu.', 'A rare rainbow-coloured outfit.', 'Рідкісне райдужне вбрання.', 'Редкий радужный наряд.', 'En sällsynt regnbågsfärgad dräkt.', 'Et sjeldent regnbuefarget antrekk.', 'Un raro traje de colores arcoíris.', 'Un raro abito color arcobaleno.']
+      });
+      const itemNames = {
+        en: ['Sunbird','Raspberry Cloud','Mint Wing','Evening Sky','Peach Cloud','Sea Breeze','Lavender','Snow Cloud','Emerald Bird','Pearl Shimmer','Rose Sparkle','Star Shimmer','Golden Crown','Rainbow Star','Sunglasses','Siipiklubi Hat','Pilot Scarf','Flight Goggles','Party Hat','Bow Tie','Star Helmet','Light Wings','Little Magnet','Wider Openings','Keen Lookout','Wind Vane'],
+        uk: ['Сонячна пташка','Малинова хмарка','М’ятне крило','Вечірнє небо','Персикова хмарка','Морський бриз','Лаванда','Снігова хмарка','Смарагдова пташка','Перлинне сяйво','Рожевий блиск','Зоряне сяйво','Золота корона','Райдужна зірка','Сонцезахисні окуляри','Капелюх Siipiklubi','Шарф пілота','Льотні окуляри','Святковий ковпак','Метелик','Зоряний шолом','Легкі крила','Маленький магніт','Ширші отвори','Пильний спостерігач','Флюгер'],
+        ru: ['Солнечная птичка','Малиновое облачко','Мятное крыло','Вечернее небо','Персиковое облачко','Морской бриз','Лаванда','Снежное облачко','Изумрудная птичка','Жемчужное сияние','Розовый блеск','Звёздное сияние','Золотая корона','Радужная звезда','Солнцезащитные очки','Шляпа Siipiklubi','Шарф пилота','Лётные очки','Праздничный колпак','Бабочка','Звёздный шлем','Лёгкие крылья','Маленький магнит','Широкие проёмы','Зоркий наблюдатель','Флюгер'],
+        sv: ['Solfågel','Hallonmoln','Mintvinge','Kvällshimmel','Persikomoln','Havsbris','Lavendel','Snömoln','Smaragdfågel','Pärlglans','Rosenskimmer','Stjärnglans','Guldkrona','Regnbågsstjärna','Solglasögon','Siipiklubi-hatt','Flyghalsduk','Flygglasögon','Partyhatt','Fluga','Stjärnhjälm','Lätta vingar','Liten magnet','Bredare öppningar','Skarp utkik','Vindflöjel'],
+        no: ['Solfugl','Bringebærsky','Mintvinge','Kveldshimmel','Ferskensky','Havbris','Lavendel','Snøsky','Smaragdfugl','Perleglans','Roseglitter','Stjerneglans','Gullkrone','Regnbuestjerne','Solbriller','Siipiklubi-hatt','Flyskjerf','Flybriller','Festhatt','Sløyfe','Stjernehjelm','Lette vinger','Liten magnet','Bredere åpninger','Skarpt utkikk','Vindfløy'],
+        es: ['Pájaro solar','Nube de frambuesa','Ala de menta','Cielo de tarde','Nube de melocotón','Brisa marina','Lavanda','Nube de nieve','Pájaro esmeralda','Brillo de perla','Destello rosa','Brillo estelar','Corona dorada','Estrella arcoíris','Gafas de sol','Gorra Siipiklubi','Bufanda de piloto','Gafas de aviador','Gorro de fiesta','Pajarita','Casco estelar','Alas ligeras','Pequeño imán','Aberturas más amplias','Vigilante atento','Veleta'],
+        it: ['Uccellino solare','Nuvola di lampone','Ala alla menta','Cielo serale','Nuvola di pesca','Brezza marina','Lavanda','Nuvola di neve','Uccello smeraldo','Bagliore di perla','Scintillio rosa','Bagliore stellare','Corona d’oro','Stella arcobaleno','Occhiali da sole','Cappello Siipiklubi','Sciarpa da pilota','Occhiali da volo','Cappello da festa','Papillon','Casco stellare','Ali leggere','Piccola calamita','Aperture più ampie','Osservatore attento','Banderuola']
+      };
+      const languageSelect = document.getElementById('languageSelect');
+      let languagePreference = 'auto';
+      try { languagePreference = localStorage.getItem('siipiklubi-language-v1') || 'auto'; } catch (_) { /* Use the device language. */ }
+      if (languagePreference !== 'auto' && !languageCodes.includes(languagePreference)) languagePreference = 'auto';
+      function deviceLanguage() {
+        const candidates = navigator.languages?.length ? navigator.languages : [navigator.language];
+        for (const candidate of candidates) {
+          const code = String(candidate || '').toLowerCase().split('-')[0];
+          const normalized = code === 'nb' || code === 'nn' ? 'no' : code;
+          if (languageCodes.includes(normalized)) return normalized;
+        }
+        return 'en';
+      }
+      let language = languagePreference === 'auto' ? deviceLanguage() : languagePreference;
+      function t(key, values = {}) {
+        const text = translations[key]?.[languageCodes.indexOf(language)] ?? translations[key]?.[0] ?? key;
+        return text.replace(/\{(\w+)\}/g, (_, name) => String(values[name] ?? ''));
+      }
       const skins = [
         { id: 'sun', name: 'Aurinkolintu', price: 0, description: 'Iloinen alkuperäinen lentäjä.', body: '#ffd15f', belly: '#ffe7a0', wing: '#f5ac45', tail: '#e7a33b' },
         { id: 'berry', name: 'Vadelmapilvi', price: 3, description: 'Pehmeän vaaleanpunainen asu.', body: '#f59ca8', belly: '#ffe1d7', wing: '#e7798c', tail: '#d97080' },
@@ -579,6 +735,16 @@
         { id: 'lookout', name: 'Tarkka tähystäjä', price: 9, icon: '◉', description: 'Saat puoli sekuntia enemmän aikaa valmistautua porttiin.' },
         { id: 'breeze', name: 'Kevyt tuuliviiri', price: 12, icon: '☁', description: 'Tuulijakso lyhenee hieman, mutta tuuli pysyy yhtä vahvana.' }
       ];
+      const shopItems = [...skins, ...accessories, ...upgrades];
+      function itemName(item) {
+        return language === 'fi' ? item.name : (itemNames[language]?.[shopItems.indexOf(item)] || item.name);
+      }
+      function itemDescription(item, kind) {
+        if (language === 'fi') return item.description;
+        if (kind === 'accessory') return t(item.slot === 'head' ? 'headDescription' : 'accessoryDescription');
+        if (kind === 'skin') return t(item.shimmer ? 'sparkleDescription' : item.accessory === 'crown' ? 'crownDescription' : item.accessory === 'rainbow' ? 'rainbowDescription' : 'skinDescription');
+        return t({ swift: 'upgradeSwift', magnet: 'upgradeMagnet', roomy: 'upgradeRoomy', lookout: 'upgradeLookout', breeze: 'upgradeBreeze' }[item.id]);
+      }
       const tracks = [
         { name: 'Pilvien yllä', file: 'siipiklubi-aanet/pilvien-ylla.mp3' },
         { name: 'Taivaan tahtiin', file: 'siipiklubi-aanet/taivaan-tahtiin.mp3' },
@@ -624,7 +790,8 @@
       function updateCoins() {
         document.getElementById('coinTotal').textContent = inventory.coins > 999 ? '999+' : inventory.coins;
         document.getElementById('shopBalance').textContent = inventory.coins;
-        openShopButton.setAttribute('aria-label', `Avaa kauppa, kolikoita ${inventory.coins}`);
+        openShopButton.setAttribute('aria-label', t('openShop', { n: inventory.coins }));
+        openShopButton.title = t('shop');
       }
       updateCoins();
       try { best = Math.max(0, Number.parseInt(localStorage.getItem(STORAGE_KEY), 10) || 0); } catch (_) { /* The game also works without storage. */ }
@@ -673,12 +840,12 @@
         const value = soundOn ? Math.round(masterVolume * 100) : 0;
         musicPlayer.volume = soundOn ? masterVolume : 0;
         volumeSlider.value = value;
-        volumeSlider.setAttribute('aria-valuetext', `${value} prosenttia`);
+        volumeSlider.setAttribute('aria-valuetext', `${value}%`);
         volumeValue.value = `${value}%`;
         volumeValue.textContent = `${value}%`;
-        soundText.textContent = soundOn ? 'ÄÄNET PÄÄLLÄ' : 'ÄÄNET POIS';
+        soundText.textContent = t(soundOn ? 'soundOn' : 'soundOff');
         soundButton.setAttribute('aria-pressed', String(soundOn));
-        soundButton.setAttribute('aria-label', soundOn ? 'Mykistä äänet' : 'Laita äänet päälle');
+        soundButton.setAttribute('aria-label', t(soundOn ? 'mute' : 'unmute'));
         soundIcon.innerHTML = soundOn
           ? '<path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15 9a4 4 0 0 1 0 6M18 6a8 8 0 0 1 0 12"/>'
           : '<path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="m16 9 5 6m0-6-5 6"/>';
@@ -757,7 +924,7 @@
         pipes = [makePipe(Math.min(width + 65, bird.x + 560), lastGap, 0)];
         scenery = 0;
         showState('playing');
-        announcement.textContent = 'Lento alkoi!';
+        announcement.textContent = t('started');
         tone(440, .13, 'sine');
         tone(660, .16, 'sine', .04, .1);
       }
@@ -765,14 +932,14 @@
         if (state !== 'playing') return;
         clearInput();
         showState('paused');
-        announcement.textContent = 'Peli on tauolla.';
+        announcement.textContent = t('paused');
       }
       function resumeGame() {
         if (state !== 'paused') return;
         clearInput();
         showState('playing');
         lastTime = 0;
-        announcement.textContent = 'Lento jatkuu.';
+        announcement.textContent = t('resumed');
         tone(520, .1);
       }
       function goToMenu() {
@@ -796,7 +963,7 @@
         resumeAfterShop = false;
         shopModal.hidden = true;
         showState('ready');
-        announcement.textContent = 'Aloitusnäyttö. Voit aloittaa uuden lennon.';
+        announcement.textContent = t('homeStatus');
         document.getElementById('startButton').focus();
       }
       function renderShop() {
@@ -815,13 +982,13 @@
             swatch.setAttribute('aria-hidden', 'true');
             swatch.style.background = item.accessory === 'rainbow' ? 'linear-gradient(135deg, #f7aebc, #ffdd81, #a0e5cf, #bda6ef)' : item.shimmer ? `linear-gradient(135deg, ${item.body} 25%, #fff 50%, ${item.wing} 85%)` : (item.body || '#dcebc9');
             swatch.textContent = kind === 'skin' ? (item.accessory === 'crown' ? '♛' : '✦') : item.icon;
-            const name = document.createElement('div'); name.className = 'item-name'; name.textContent = item.name;
-            const description = document.createElement('p'); description.className = 'item-description'; description.textContent = item.description;
+            const name = document.createElement('div'); name.className = 'item-name'; name.textContent = itemName(item);
+            const description = document.createElement('p'); description.className = 'item-description'; description.textContent = itemDescription(item, kind);
             const button = document.createElement('button'); button.className = 'item-button'; button.type = 'button';
-            button.textContent = equipped ? (kind === 'accessory' ? 'POISTA KÄYTÖSTÄ' : 'KÄYTÖSSÄ') : owned ? (kind === 'upgrade' ? 'OSTETTU' : 'OTA KÄYTTÖÖN') : `OSTA · ${item.price} ●`;
+            button.textContent = equipped ? t(kind === 'accessory' ? 'remove' : 'equipped') : owned ? t(kind === 'upgrade' ? 'purchased' : 'equip') : `${t('buy')} · ${item.price} ●`;
             button.disabled = (equipped && kind === 'skin') || (owned && kind === 'upgrade') || (!owned && inventory.coins < item.price);
-            if (!owned && inventory.coins < item.price) button.title = `Tarvitset vielä ${item.price - inventory.coins} kolikkoa.`;
-            button.setAttribute('aria-label', `${item.name}: ${button.textContent}`);
+            if (!owned && inventory.coins < item.price) button.title = t('need', { n: item.price - inventory.coins });
+            button.setAttribute('aria-label', `${itemName(item)}: ${button.textContent}`);
             button.addEventListener('click', () => buyItem(kind, item));
             head.append(swatch, name); card.append(head, description, button); container.append(card);
           });
@@ -839,7 +1006,7 @@
             inventory.owned.push(item.id);
           }
           inventory.equipped = item.id;
-          shopMessage.textContent = `${item.name} on nyt käytössä!`;
+          shopMessage.textContent = t('nowEquipped', { item: itemName(item) });
         } else if (kind === 'accessory') {
           if (!inventory.ownedAccessories.includes(item.id)) {
             if (inventory.coins < item.price) return;
@@ -848,16 +1015,16 @@
           }
           if (inventory.equippedAccessories[item.slot] === item.id) {
             delete inventory.equippedAccessories[item.slot];
-            shopMessage.textContent = `${item.name} poistettiin käytöstä.`;
+            shopMessage.textContent = t('removed', { item: itemName(item) });
           } else {
             inventory.equippedAccessories[item.slot] = item.id;
-            shopMessage.textContent = `${item.name} on nyt käytössä!`;
+            shopMessage.textContent = t('nowEquipped', { item: itemName(item) });
           }
         } else {
           if (inventory.upgrades.includes(item.id) || inventory.coins < item.price) return;
           inventory.coins -= item.price;
           inventory.upgrades.push(item.id);
-          shopMessage.textContent = `${item.name} on ostettu!`;
+          shopMessage.textContent = t('bought', { item: itemName(item) });
         }
         shopMessage.hidden = false;
         saveInventory();
@@ -898,16 +1065,56 @@
         bestEl.textContent = formatDistance(best);
         document.getElementById('finalDistance').textContent = formatDistance(distance);
         document.getElementById('finalBest').textContent = formatDistance(best);
-        const result = resultCards[resultIndex++ % resultCards.length];
-        document.getElementById('resultKicker').textContent = newRecord ? 'UUSI ENNÄTYS!' : result.kicker;
-        document.getElementById('resultTitle').textContent = result.title;
-        document.getElementById('resultAccent').textContent = result.accent;
-        document.getElementById('resultMessage').textContent = newRecord ? result.record : result.message;
+        lastResult = resultCards[resultIndex++ % resultCards.length];
+        lastWasRecord = newRecord;
+        renderResult();
         clearInput();
         showState('over');
-        announcement.textContent = `Hieno lento! Matka ${Math.floor(distance)} metriä, ennätys ${best} metriä. ${newRecord ? result.record : result.message}`;
+        announcement.textContent = t('resultStatus', { distance: Math.floor(distance), best });
         tone(300, .18, 'triangle', .06);
         tone(210, .25, 'triangle', .05, .12);
+      }
+      function renderResult() {
+        if (!lastResult) return;
+        document.getElementById('resultKicker').textContent = lastWasRecord ? t('newRecord') : language === 'fi' ? lastResult.kicker : t('resultKicker');
+        document.getElementById('resultTitle').textContent = language === 'fi' ? lastResult.title : t('resultTitle');
+        document.getElementById('resultAccent').textContent = language === 'fi' ? lastResult.accent : t('resultAccent');
+        document.getElementById('resultMessage').textContent = language === 'fi' ? (lastWasRecord ? lastResult.record : lastResult.message) : t(lastWasRecord ? 'recordInfo' : 'resultInfo');
+      }
+      function applyLanguage() {
+        language = languagePreference === 'auto' ? deviceLanguage() : languagePreference;
+        languageSelect.value = languagePreference;
+        document.documentElement.lang = language === 'no' ? 'nb' : language;
+        document.title = `Siipiklubi – ${t('tagline')}`;
+        document.querySelectorAll('[data-i18n]').forEach(element => { element.textContent = t(element.dataset.i18n); });
+        languageSelect.setAttribute('aria-label', t('language'));
+        languageSelect.title = t('language');
+        document.getElementById('homeButton').setAttribute('aria-label', t('home'));
+        document.getElementById('menuButton').setAttribute('aria-label', t('home'));
+        stage.setAttribute('aria-label', t('stage'));
+        canvas.setAttribute('aria-label', t('canvas'));
+        pauseButton.setAttribute('aria-label', t('pause'));
+        pauseButton.title = `${t('pause')} (P / Esc)`;
+        closeShopButton.setAttribute('aria-label', t('closeShop'));
+        document.querySelector('.music-box').setAttribute('aria-label', t('audioGroup'));
+        document.querySelector('.how').setAttribute('aria-label', t('instructions'));
+        document.querySelector('.touch-controls').setAttribute('aria-label', t('touch'));
+        document.querySelectorAll('.dpad button').forEach(button => button.setAttribute('aria-label', t(button.dataset.direction)));
+        document.getElementById('nextTrack').setAttribute('aria-label', t('nextTrack'));
+        document.getElementById('nextTrack').title = t('nextTrack');
+        volumeSlider.setAttribute('aria-label', t('volume'));
+        updateCoins();
+        syncSoundControls();
+        if (coinCombo) {
+          const bonus = Math.floor(coinCombo / 3);
+          comboBadge.textContent = `✦ ${t('combo')} ${coinCombo}${bonus ? ` · +${bonus} ${t('bonus')}` : ''}`;
+        }
+        if (coinReceiptRemaining > 0) coinReceipt.textContent = `${t('coins')} +${lastCoinAward} ●`;
+        if (wind.warning) windBadge.textContent = `⚠ ${t('stormWarning')} →`;
+        else if (wind.active) windBadge.textContent = `☁ ${t('strongWind')} ${wind.direction < 0 ? '←' : '→'}`;
+        if (gate.phase === 'warning' || gate.phase === 'sweep') gateBadge.textContent = `${t('gateWarning')} ${gate.lastDirection < 0 ? '←' : '→'}`;
+        renderResult();
+        if (!shopModal.hidden) { shopMessage.hidden = true; renderShop(); }
       }
       document.getElementById('startButton').addEventListener('click', startGame);
       document.getElementById('retryButton').addEventListener('click', startGame);
@@ -935,8 +1142,21 @@
       document.getElementById('nextTrack').addEventListener('click', () => selectTrack(trackIndex + 1));
       musicPlayer.addEventListener('ended', () => selectTrack(trackIndex + 1));
       selectTrack(0);
-      syncSoundControls();
+      applyLanguage();
+      languageSelect.addEventListener('focus', clearInput);
+      languageSelect.addEventListener('change', () => {
+        languagePreference = languageSelect.value;
+        try { localStorage.setItem('siipiklubi-language-v1', languagePreference); } catch (_) { /* Keep the choice for this session. */ }
+        applyLanguage();
+      });
+      window.addEventListener('languagechange', () => { if (languagePreference === 'auto') applyLanguage(); });
+      window.addEventListener('storage', event => {
+        if (event.key !== 'siipiklubi-language-v1') return;
+        languagePreference = languageCodes.includes(event.newValue) ? event.newValue : 'auto';
+        applyLanguage();
+      });
       window.addEventListener('keydown', event => {
+        if (event.target instanceof HTMLSelectElement) return;
         if (!shopModal.hidden) {
           if (event.code === 'Escape') { event.preventDefault(); closeShop(); }
           else if (event.code === 'Tab') {
@@ -1006,12 +1226,13 @@
         inventory.coins += amount;
         saveInventory();
         updateCoins();
-        coinReceipt.textContent = `KOLIKOT +${amount} ●`;
+        lastCoinAward = amount;
+        coinReceipt.textContent = `${t('coins')} +${amount} ●`;
         coinReceiptRemaining = 1.6;
         coinReceipt.hidden = false;
-        comboBadge.textContent = `✦ KOMBO ${coinCombo}${bonus ? ` · +${bonus} BONUS` : ''}`;
+        comboBadge.textContent = `✦ ${t('combo')} ${coinCombo}${bonus ? ` · +${bonus} ${t('bonus')}` : ''}`;
         comboBadge.hidden = false;
-        announcement.textContent = `${rare ? 'Violetti kolikko' : 'Kolikko'} kerätty: +${amount}. Kombo ${coinCombo}. Kolikoita ${inventory.coins}.`;
+        announcement.textContent = t('coinStatus', { amount, combo: coinCombo, coins: inventory.coins });
         tone(880, .12, 'sine', .04);
         tone(1100, .14, 'sine', .035, .08);
       }
@@ -1028,7 +1249,7 @@
           if (coinCombo) {
             coinCombo = 0;
             comboBadge.hidden = true;
-            announcement.textContent = 'Kolikko jäi ulottumattomiin – kombo katkesi.';
+            announcement.textContent = t('comboLost');
           }
         }
       }
@@ -1048,9 +1269,9 @@
         wind.pending = false;
         wind.warning = false;
         windBadge.hidden = true;
-        gateBadge.textContent = `SIIRRY AUKKOON ${direction < 0 ? '←' : '→'}`;
+        gateBadge.textContent = `${t('gateWarning')} ${direction < 0 ? '←' : '→'}`;
         gateBadge.hidden = false;
-        announcement.textContent = `Portti tulossa! Siirry aukkoon ${direction < 0 ? 'vasemmalle' : 'oikealle'}.`;
+        announcement.textContent = t('gateStatus', { direction: t(direction < 0 ? 'leftDirection' : 'rightDirection') });
         tone(420, .14, 'triangle', .04);
         tone(560, .16, 'triangle', .04, .12);
       }
@@ -1061,9 +1282,9 @@
         wind.direction = 1;
         wind.y = clamp(bird.y + (Math.random() - .5) * 140, 125, 400);
         windBadge.classList.add('warning');
-        windBadge.textContent = '⚠ MYRSKYVAROITUS →';
+        windBadge.textContent = `⚠ ${t('stormWarning')} →`;
         windBadge.hidden = false;
-        announcement.textContent = 'Myrskyvaroitus! Voimakas tuuli alkaa pian oikealle.';
+        announcement.textContent = t('stormStatus');
         tone(440, .15, 'triangle', .04);
       }
       function startWind() {
@@ -1077,9 +1298,9 @@
         wind.elapsed = 0;
         wind.remaining = inventory.upgrades.includes('breeze') ? 3.1 : 3.5;
         windBadge.classList.remove('warning');
-        windBadge.textContent = `☁ VOIMAKAS TUULI ${wind.direction < 0 ? '←' : '→'}`;
+        windBadge.textContent = `☁ ${t('strongWind')} ${wind.direction < 0 ? '←' : '→'}`;
         windBadge.hidden = false;
-        announcement.textContent = `Voimakas tuuli puhaltaa ${wind.direction < 0 ? 'vasemmalle' : 'oikealle'}. Voit väistää ylös tai alas.`;
+        announcement.textContent = t('windStatus', { direction: t(wind.direction < 0 ? 'leftDirection' : 'rightDirection') });
       }
       function easeRecoveryPipe(pipe, newPipe = false) {
         if (pipe.moving) {
@@ -1101,7 +1322,7 @@
           easeRecoveryPipe(pipe);
           windRecoveryPipes--;
         }
-        announcement.textContent = 'Tuuli laantui. Hetki aikaa palautua!';
+        announcement.textContent = t('windRecovery');
       }
       function update(dt) {
         animTime += dt;
@@ -1164,7 +1385,7 @@
           if (!pipe.passed && pipe.x + PIPE_WIDTH < bird.x - BIRD_RADIUS) {
             pipe.passed = true;
             pipesPassed++;
-            announcement.textContent = `${pipesPassed}. este ohitettu, matka ${Math.floor(distance)} metriä.`;
+            announcement.textContent = t('passed', { distance: Math.floor(distance) });
             tone(640, .1, 'sine', .035);
             tone(850, .15, 'sine', .035, .08);
           }
@@ -1194,7 +1415,7 @@
             gate.phase = 'idle';
             gate.nextPipeCount = pipesPassed + 5;
             gateBadge.hidden = true;
-            announcement.textContent = 'Hienosti väistetty! Lento jatkuu.';
+            announcement.textContent = t('cleared');
             tone(700, .12, 'sine', .04);
           }
         }
