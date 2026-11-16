@@ -376,7 +376,7 @@
       <div class="top-actions">
         <span class="edition" data-i18n="free">✦ PELAA ILMAISEKSI</span>
         <select class="language-select" id="languageSelect" aria-label="Kieli" title="Kieli">
-          <option value="auto">🌐 AUTO</option><option value="fi">Suomi</option><option value="en">English</option><option value="uk">Українська</option><option value="ru">Русский</option><option value="sv">Svenska</option><option value="no">Norsk</option><option value="es">Español</option><option value="it">Italiano</option>
+          <option value="auto">🌐 AUTO</option><option value="fi">Suomi</option><option value="en">English</option><option value="uk">Українська</option><option value="ru">Русский</option><option value="sv">Svenska</option><option value="no">Norsk</option><option value="es">Español</option><option value="it">Italiano</option><option value="de">Deutsch</option>
         </select>
         <button class="shop-button" id="openShop" type="button" aria-label="Avaa kauppa, kolikoita 0"><span class="shop-label" data-i18n="shop">KAUPPA</span><span class="coin-mark" aria-hidden="true">●</span><strong id="coinTotal">0</strong></button>
         <button class="sound-button" id="soundButton" type="button" aria-pressed="true" aria-label="Mykistä äänet">
@@ -557,8 +557,8 @@
       const keyboard = new Set();
       const touchPointers = new Map();
       const directionByCode = { ArrowUp: 'up', KeyW: 'up', ArrowDown: 'down', KeyS: 'down', ArrowLeft: 'left', KeyA: 'left', ArrowRight: 'right', KeyD: 'right' };
-      // Language order: Finnish, English, Ukrainian, Russian, Swedish, Norwegian, Spanish, Italian.
-      const languageCodes = ['fi', 'en', 'uk', 'ru', 'sv', 'no', 'es', 'it'];
+      // Language order: Finnish, English, Ukrainian, Russian, Swedish, Norwegian, Spanish, Italian, German.
+      const languageCodes = ['fi', 'en', 'uk', 'ru', 'sv', 'no', 'es', 'it', 'de'];
       const translations = {
         language: ['Kieli', 'Language', 'Мова', 'Язык', 'Språk', 'Språk', 'Idioma', 'Lingua'],
         brandSub: ['PIENI LENTOKERHO', 'LITTLE FLIGHT CLUB', 'МАЛИЙ ЛЬОТНИЙ КЛУБ', 'МАЛЕНЬКИЙ ЛЁТНЫЙ КЛУБ', 'LILLA FLYGKLUBBEN', 'DEN LILLE FLYKLUBBEN', 'PEQUEÑO CLUB DE VUELO', 'PICCOLO CLUB DI VOLO'],
@@ -676,7 +676,32 @@
         crownDescription: ['Kultainen asu ja kruunu. Päähineet peittävät kruunun.', 'Golden outfit with a crown. Headwear covers the crown.', 'Золотий наряд із короною. Головний убір закриває корону.', 'Золотой наряд с короной. Головной убор скрывает корону.', 'Gyllene dräkt med krona. Huvudbonader döljer kronan.', 'Gyllent antrekk med krone. Hodeplagg dekker kronen.', 'Traje dorado con corona. Los sombreros cubren la corona.', 'Abito dorato con corona. I cappelli coprono la corona.'],
         rainbowDescription: ['Harvinainen sateenkaaren värinen asu.', 'A rare rainbow-coloured outfit.', 'Рідкісне райдужне вбрання.', 'Редкий радужный наряд.', 'En sällsynt regnbågsfärgad dräkt.', 'Et sjeldent regnbuefarget antrekk.', 'Un raro traje de colores arcoíris.', 'Un raro abito color arcobaleno.']
       });
+      const german = {
+        language: 'Sprache', brandSub: 'KLEINER FLUGCLUB', free: '✦ KOSTENLOS SPIELEN', shop: 'SHOP',
+        tagline: 'EIN KLEINES SPIEL FÜR GROSSE FLÜGE', headline: 'Der Himmel gehört dir.', introNote: 'EIN VOGEL. EIN ENDLOSER HIMMEL. WIE WEIT FLIEGST DU?',
+        distance: 'STRECKE', record: 'REKORD', menu: 'MENÜ', flightMode: '✦ FREIER FLUG', speed: 'TEMPO',
+        welcome: 'WILLKOMMEN AN BORD', readyTitle: 'Flügel ausbreiten.', readyAccent: 'Los geht’s!', readyInfo: 'Sammle Münzen, weiche Hindernissen aus und fliege durch die Toröffnung!',
+        controls: 'Bewege dich in alle Richtungen', controlsDetail: 'Pfeiltasten, WASD oder Touch-Steuerung', start: 'FLUG STARTEN', spaceHint: 'oder Leertaste drücken',
+        pauseKicker: 'ZEIT FÜR EINE PAUSE', pauseTitle: 'Flug', pauseAccent: 'pausiert.', pauseInfo: 'Der Himmel wartet genau dort, wo du aufgehört hast.', resume: 'FLUG FORTSETZEN', pauseHint: 'Auch P oder Esc setzt den Flug fort', retry: 'NOCHMAL FLIEGEN',
+        music: '♫ MUSIK', move: 'FREI BEWEGEN', keys: 'Pfeiltasten oder WASD', avoid: 'WEICHE HINDERNISSEN UND WIND AUS', howFar: 'Wie viele Meter fliegst du?', tip: '✦ Pause: P oder Esc', footer: 'GEMACHT FÜR KLEINE PAUSEN ♥',
+        shopKicker: '✦ KLEINER FLUGLADEN', shopTitle: 'Siipiklubi-Shop', shopIntro: 'Sammle Münzen hintereinander: Ab der dritten Münze erhältst du sofort einen Bonus, der alle drei Münzen steigt. Verdiente Boni bleiben auch nach dem Ende der Kombo erhalten. Seltene lila Münzen sind drei wert. Outfits und Accessoires verändern nur das Aussehen.',
+        styleTag: 'FINDE DEINEN STIL', skins: 'Farben und besondere Outfits', combineTag: 'MIT FARBEN KOMBINIEREN', accessories: 'Accessoires', upgradeTag: 'EINE KLEINE HILFE', upgrades: 'Verbesserungen',
+        equipped: 'AUSGERÜSTET', remove: 'ABLEGEN', equip: 'AUSRÜSTEN', purchased: 'GEKAUFT', buy: 'KAUFEN',
+        skinDescription: 'Nur Aussehen, kein Spielvorteil.', accessoryDescription: 'Mit Farben und anderen Accessoires kombinieren.', headDescription: 'Mit Farben kombinieren. Kopfbedeckungen verdecken die goldene Krone.',
+        upgradeSwift: 'Die Bewegungsgeschwindigkeit steigt um 8 %. Gegen den Wind kommst du langsam voran.', upgradeMagnet: 'Sammle Münzen aus etwas größerer Entfernung.', upgradeRoomy: 'Neue Rohröffnungen werden um 20 und Toröffnungen um 10 Einheiten breiter.', upgradeLookout: 'Du erhältst eine halbe Sekunde mehr Vorwarnung vor einem Tor.', upgradeBreeze: 'Windböen dauern etwas kürzer, bleiben aber genauso stark.',
+        home: 'Siipiklubi – zum Startbildschirm', stage: 'Siipiklubi-Spielfeld', canvas: 'Ein Vogel fliegt und weicht Hindernissen aus.', pause: 'Spiel pausieren', closeShop: 'Shop schließen', openShop: 'Shop öffnen, {n} Münzen',
+        audioGroup: 'Musik und Lautstärke', nextTrack: 'Nächstes Lied', volume: 'Lautstärke', soundOn: 'TON AN', soundOff: 'TON AUS', mute: 'Ton ausschalten', unmute: 'Ton einschalten', instructions: 'Spielanleitung', touch: 'Touch-Steuerung', up: 'Hoch', down: 'Runter', left: 'Zurück', right: 'Vorwärts',
+        need: 'Du brauchst noch {n} Münzen.', nowEquipped: '{item} ist jetzt ausgerüstet!', removed: '{item} wurde abgelegt.', bought: '{item} wurde gekauft!',
+        started: 'Der Flug hat begonnen!', paused: 'Spiel pausiert.', resumed: 'Der Flug geht weiter.', homeStatus: 'Startbildschirm. Starte einen neuen Flug.',
+        resultKicker: 'TOLLER FLUG', resultTitle: 'Toller', resultAccent: 'Flug!', resultInfo: 'Jeder Flug bringt dich ein Stück weiter.', newRecord: 'NEUER REKORD!', recordInfo: 'Ein neuer Rekord! Was für ein Flug!', resultStatus: 'Strecke: {distance} Meter, Rekord: {best} Meter.',
+        coins: 'MÜNZEN', combo: 'KOMBO', bonus: 'BONUS', coinStatus: 'Münze gesammelt: +{amount}. Kombo {combo}. Münzen: {coins}.', comboLost: 'Münze außer Reichweite – Kombo beendet.',
+        gateWarning: 'FLIEGE IN DIE ÖFFNUNG', stormWarning: 'STURMWARNUNG', strongWind: 'STARKER WIND', windRecovery: 'Der Wind hat nachgelassen. Erhole dich kurz!', cleared: 'Gut ausgewichen! Der Flug geht weiter.', passed: 'Hindernis passiert, Strecke {distance} Meter.',
+        leftDirection: 'nach links', rightDirection: 'nach rechts', gateStatus: 'Tor voraus! Fliege {direction} in die Öffnung.', stormStatus: 'Sturmwarnung! Bald weht starker Wind nach rechts.', windStatus: 'Starker Wind weht {direction}. Du kannst nach oben oder unten ausweichen.',
+        sparkleDescription: 'Ein glitzerndes Outfit; verändert nur das Aussehen.', crownDescription: 'Goldenes Outfit mit Krone. Kopfbedeckungen verdecken die Krone.', rainbowDescription: 'Ein seltenes regenbogenfarbenes Outfit.'
+      };
+      Object.entries(translations).forEach(([key, values]) => values.push(german[key]));
       const itemNames = {
+        de: ['Sonnenvogel','Himbeerwolke','Minzflügel','Abendhimmel','Pfirsichwolke','Meeresbrise','Lavendel','Schneewolke','Smaragdvogel','Perlenschimmer','Rosenglanz','Sternenschimmer','Goldkrone','Regenbogenstern','Sonnenbrille','Siipiklubi-Hut','Pilotenschal','Fliegerbrille','Partyhut','Fliege','Sternenhelm','Leichte Flügel','Kleiner Magnet','Breitere Öffnungen','Aufmerksamer Späher','Windfahne'],
         en: ['Sunbird','Raspberry Cloud','Mint Wing','Evening Sky','Peach Cloud','Sea Breeze','Lavender','Snow Cloud','Emerald Bird','Pearl Shimmer','Rose Sparkle','Star Shimmer','Golden Crown','Rainbow Star','Sunglasses','Siipiklubi Hat','Pilot Scarf','Flight Goggles','Party Hat','Bow Tie','Star Helmet','Light Wings','Little Magnet','Wider Openings','Keen Lookout','Wind Vane'],
         uk: ['Сонячна пташка','Малинова хмарка','М’ятне крило','Вечірнє небо','Персикова хмарка','Морський бриз','Лаванда','Снігова хмарка','Смарагдова пташка','Перлинне сяйво','Рожевий блиск','Зоряне сяйво','Золота корона','Райдужна зірка','Сонцезахисні окуляри','Капелюх Siipiklubi','Шарф пілота','Льотні окуляри','Святковий ковпак','Метелик','Зоряний шолом','Легкі крила','Маленький магніт','Ширші отвори','Пильний спостерігач','Флюгер'],
         ru: ['Солнечная птичка','Малиновое облачко','Мятное крыло','Вечернее небо','Персиковое облачко','Морской бриз','Лаванда','Снежное облачко','Изумрудная птичка','Жемчужное сияние','Розовый блеск','Звёздное сияние','Золотая корона','Радужная звезда','Солнцезащитные очки','Шляпа Siipiklubi','Шарф пилота','Лётные очки','Праздничный колпак','Бабочка','Звёздный шлем','Лёгкие крылья','Маленький магнит','Широкие проёмы','Зоркий наблюдатель','Флюгер'],
